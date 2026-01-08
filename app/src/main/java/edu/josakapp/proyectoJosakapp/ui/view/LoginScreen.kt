@@ -73,12 +73,13 @@ fun HomeScreen(name: String,
             )
             Box(
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.6f))
                     .align(Alignment.Center)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White.copy(alpha = 0.7f))
-                    .padding(24.dp)
+                    .padding(horizontal = 32.dp)
+                 //   .matchParentSize()
+                //    .background(Color.Black.copy(alpha = 0.6f))
+                    .align(Alignment.Center)
+                    .clip(RoundedCornerShape(16.dp)),
+                 //   .background(Color.White.copy(alpha = 0.7f))
             )
             cuerpoHome(onGoSecondScreen,
                 onGoRegisterScreen, onGoForgotPasswordScreen)
@@ -91,7 +92,7 @@ fun HomeScreen(name: String,
 fun encabezadoHome() {
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(8.dp)
     ){
         Text(text = stringResource(R.string.nombre_empresa),
@@ -233,7 +234,7 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
         /***Despues del boton se debe de añadir un acceso rapido */
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
             socialLoginIcon(R.drawable.ic_google) {/*Accion de entrar con google*/}
             socialLoginIcon(R.drawable.ic_facebook) {/*Accion de entrar con google*/}
