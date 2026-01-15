@@ -8,7 +8,7 @@ class UserRepository(
     // private val remote: RemoteDataSource
 ) {
 
-    // Usuarios con sus hábitos (relación 1-N)
+    // Obtener usuarios con sus hábitos
     fun getUsersWithHabitos() = local.getUsersWithHabitos()
 
     // Obtener usuario por ID

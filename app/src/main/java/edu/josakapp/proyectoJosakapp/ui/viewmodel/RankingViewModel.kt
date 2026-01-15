@@ -23,11 +23,11 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
 
 
 
-    fun getGlobalRanking() = rankingRepository.getGlobalRanking()
+    //fun getGlobalRanking() = rankingRepository.getGlobalRanking()
 
-    fun getFriendsRanking(userId: Int) = rankingRepository.getFriendsRanking(userId)
+    //fun getFriendsRanking(userId: Int) = rankingRepository.getFriendsRanking(userId)
 
-    fun updateUserScore(userId: Int, score: Int) = viewModelScope.launch {
-        rankingRepository.updateUserScore(userId, score)
+    //fun updateUserScore(userId: Int, score: Int) = viewModelScope.launch {
+        //rankingRepository.updateUserScore(userId, score)
     }
-}
+

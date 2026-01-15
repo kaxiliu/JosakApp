@@ -17,9 +17,6 @@ class HabitosRepository(
     // Obtener todos los hábitos de un usuario concreto
     fun getHabitosByUserId(userId: Int) = local.getHabitosByUserId(userId)
 
-    // Obtener usuarios con sus hábitos (relación 1-N)
-    fun getUsersWithHabitos() = local.getUsersWithHabitos()
-
     // Insertar o actualizar un hábito
     suspend fun insertHabito(habito: Habito) = local.insertHabito(habito)
 

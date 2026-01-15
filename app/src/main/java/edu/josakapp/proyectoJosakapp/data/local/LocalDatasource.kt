@@ -8,26 +8,28 @@ class LocalDatasource(
     private val habitosDao: HabitosDao
 ) {
 
+    // -------------------------
     // USER DAO
-    fun getUsersWithHabitos() = userDao.getUserWithHabito()
+    // -------------------------
 
-    fun getAllHabitosFromUserDao() = userDao.getAllHabito()
+    fun getUsersWithHabitos() = userDao.getUsersWithHabitos()
 
     suspend fun getUserById(id: Int) = userDao.getUserById(id)
 
-    suspend fun getHabitoByIdFromUserDao(id: Int) = userDao.getHabitoById(id)
+    suspend fun insertUser(user: User) = userDao.insertUser(user)
 
 
+    // -------------------------
     // HABITOS DAO
+    // -------------------------
+
     fun getAllHabitos() = habitosDao.getAllHabitos()
 
     fun getUsersWithHabitosFlow() = habitosDao.getUsersWithHabitos()
 
     fun getHabitoById(id: Int) = habitosDao.getHabitoById(id)
 
-    fun getHabitosByUserId(id: Int) = habitosDao.getUserById(id)
-
-    suspend fun insertUser(user: User) = habitosDao.insertUser(user)
+    fun getHabitosByUserId(userId: Int) = habitosDao.getHabitosByUserId(userId)
 
     suspend fun insertHabito(habito: Habito) = habitosDao.insertHabito(habito)
 
