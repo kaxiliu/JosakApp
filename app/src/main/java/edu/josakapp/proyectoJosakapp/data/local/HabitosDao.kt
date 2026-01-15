@@ -34,11 +34,11 @@ interface HabitosDao {
 
 
     //Inserta una nueva usuario
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User)
 
     //Inserta un nuevo habito
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHabito(habito: Habito)
 
     //Elimina un habito
