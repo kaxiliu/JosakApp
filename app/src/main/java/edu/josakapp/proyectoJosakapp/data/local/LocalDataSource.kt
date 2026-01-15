@@ -11,7 +11,7 @@ class LocalDataSource(
     // USER DAO
     fun getUsersWithHabitos() = userDao.getUserWithHabito()
 
-    fun getAllHabitosFromUserDao() = userDao.getAllHabito()
+    fun getAllHabitosFromUserDao() = userDao.getAllUsers()
 
     suspend fun getUserById(id: Int) = userDao.getUserById(id)
 

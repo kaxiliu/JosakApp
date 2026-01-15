@@ -16,14 +16,13 @@ interface UserDAO {
     @Query("SELECT * FROM user ORDER BY nombre_usuario")
     fun getUserWithHabito(): List<UserWithHabito>
 
-    @Query("SELECT * FROM habito")
-    fun getAllHabito(): Flow<List<UserWithHabito>>
+    @Query("SELECT * FROM user")
+    fun getAllUsers(): Flow<List<User>>
 
-    @Query("SELECT * FROM user WHERE id_usuario = id_usuario")
+    @Query("SELECT * FROM user WHERE id_usuario = :id_usuario")
     suspend fun getUserById(id_usuario: Int): User?
 
-    @Query("SELECT * FROM habito WHERE id_habito = id_habito")
+    @Query("SELECT * FROM habito WHERE id_habito = :id_habito")
     suspend fun getHabitoById(id_habito: Int): Habito?
-
 
 }

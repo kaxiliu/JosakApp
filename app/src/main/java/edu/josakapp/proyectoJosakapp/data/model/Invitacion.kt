@@ -11,7 +11,7 @@ data class Invitacion(
     @PrimaryKey(autoGenerate = true)
     val id_invitacion: Int = 0,
     val id_usuario_emisor: Int,
-    val fecha_envio: Date,
+    val fecha_envio: Long,
     val id_usuario_receptor: Int,
     val estado: Boolean /*Se mostrará si se aceptó o no la invitación*/
 )

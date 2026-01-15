@@ -14,7 +14,7 @@ data class Habito(
     val exp_habito: Int,
     val frecuencia: String,
     val estado: Boolean,
-    val fecha_creacion: Date,
+    val fecha_creacion: Long,
     val icono: String, /**Nueva variable añadida */
     val id_usuario: Int
 )

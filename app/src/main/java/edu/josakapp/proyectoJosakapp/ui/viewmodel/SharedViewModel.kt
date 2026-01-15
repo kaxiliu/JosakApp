@@ -5,12 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import edu.josakapp.proyectoJosakapp.data.model.Product
-import edu.josakapp.proyectoJosakapp.data.repository.ProductRepository
+import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = ProductRepository(application)
+    private val repository = HabitosRepository()
 
     var name by mutableStateOf("")
         private set
@@ -19,9 +19,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         name = value
     }
 
-    // 👇 Aquí ya usas el repositorio
-    val productos: List<Product> by lazy {
+    /*
+    val productos: List<Habito> by lazy {
         repository.readRawFile()
-    }
+    }*/
 }
 

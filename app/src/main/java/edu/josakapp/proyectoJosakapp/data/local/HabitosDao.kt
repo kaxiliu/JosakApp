@@ -23,7 +23,7 @@ interface HabitosDao {
     // Devuelve un Flow con la lista de coches junto con sus marcas,
     // ordenados por el modelo del coche
     @Transaction  // Permite obtener datos de varias tablas relacionadas con una sola consulta.
-    @Query("SELECT * FROM Habito ORDER BY id_usuario")
+    @Query("SELECT * FROM user ORDER BY nombre_usuario")
     fun getUsersWithHabitos(): Flow<List<UserWithHabito>>
 
     //Devuelve un Flow con un coche específico por su ID
