@@ -9,11 +9,13 @@ class LocalDatasource(
 ) {
 
     // USER DAO
-    fun getUsersWithHabitos() = userDao.getUsersWithHabitos()
+    fun getUsersWithHabitos() = userDao.getUserWithHabito()
+
+    fun getAllHabitosFromUserDao() = userDao.getAllHabito()
 
     suspend fun getUserById(id: Int) = userDao.getUserById(id)
 
-    suspend fun insertUser(user: User) = userDao.insertUser(user)
+    suspend fun getHabitoByIdFromUserDao(id: Int) = userDao.getHabitoById(id)
 
 
     // HABITOS DAO
@@ -23,7 +25,9 @@ class LocalDatasource(
 
     fun getHabitoById(id: Int) = habitosDao.getHabitoById(id)
 
-    fun getHabitosByUserId(userId: Int) = habitosDao.getHabitosByUserId(userId)
+    fun getHabitosByUserId(id: Int) = habitosDao.getUserById(id)
+
+    suspend fun insertUser(user: User) = habitosDao.insertUser(user)
 
     suspend fun insertHabito(habito: Habito) = habitosDao.insertHabito(habito)
 

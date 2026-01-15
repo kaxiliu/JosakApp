@@ -8,8 +8,8 @@ import java.util.Date
 @Entity(tableName = "suscripcion")
 data class Suscripcion(
     @PrimaryKey(autoGenerate = true) val id_suscripcion: Int = 0,
-    val fecha_inicio: Date,
-    val fecha_fin: Date,
+    val fecha_inicio: Long,
+    val fecha_fin: Long,
     val estado: Boolean,
     val id_usuario: Int
 )

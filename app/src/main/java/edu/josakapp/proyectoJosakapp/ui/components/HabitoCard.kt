@@ -13,16 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 
 @Composable
 fun HabitoCard(
     habito: Habito,
-    onClick: (Habito) -> Unit = {},
-    onLongClick: (Habito) -> Unit = {}
+    onClick: (Habito) -> Unit = {}, //Complir
+    onLongClick: (Habito) -> Unit = {} //Modificar
 ) {
-    // Muestra la información de una película
+    // Muestra la información
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,16 +41,14 @@ fun HabitoCard(
         ) {
             // Nombre de habito
             Text(
-                text = habito.title,
+                text = habito.nombre,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             // procentaje
-            Text(
-                text = habito.year.toString(),
-            )
+            Text( text = habito.estado.toString())
         }
     }
 }

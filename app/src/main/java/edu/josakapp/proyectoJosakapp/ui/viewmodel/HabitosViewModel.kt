@@ -2,37 +2,29 @@ package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
-import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
-import kotlinx.coroutines.launch
+import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
+import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val localDatasource: LocalDatasource
+
+    private val userRepository: UserRepository
     private val habitosRepository: HabitosRepository
+
+    private val rankingRepository: RankingRepository
+
 
     init {
         val database = AppDatabase.getInstance(application)
-        val localDatasource = LocalDatasource(
-            database.usersDAO(),
-            database.habitosDAO()
-        )
+        val userDao = database.usersDAO()
+        val habitosDao = database.habitosDAO()
+        localDatasource = LocalDatasource(userDao, habitosDao)
+        userRepository = UserRepository(localDatasource)
         habitosRepository = HabitosRepository(localDatasource)
-    }
-
-    fun getAllHabitos() = habitosRepository.getAllHabitos()
-
-    fun getHabitoById(id: Int) = habitosRepository.getHabitoById(id)
-
-    fun getHabitosByUserId(userId: Int) = habitosRepository.getHabitosByUserId(userId)
-
-    fun insertHabito(habito: Habito) = viewModelScope.launch {
-        habitosRepository.insertHabito(habito)
-    }
-
-    fun deleteHabito(habito: Habito) = viewModelScope.launch {
-        habitosRepository.deleteHabito(habito)
+        rankingRepository = RankingRepository(localDatasource)
     }
 }

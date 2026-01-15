@@ -10,12 +10,12 @@ import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
-import edu.josakapp.proyectoJosakapp.ui.viewmodel.SharedViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 
 
 @Composable
 fun NavigationHost(navController: NavHostController){
-    val vm: SharedViewModel = viewModel()
+    val vm: HabitosViewModel = viewModel()
     val context = LocalContext.current
 
     NavHost(
