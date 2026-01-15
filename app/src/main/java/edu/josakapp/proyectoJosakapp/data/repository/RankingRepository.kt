@@ -1,4 +1,6 @@
 package edu.josakapp.proyectoJosakapp.data.repository
 
-class RankingRepository {
+import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
+
+class RankingRepository(localDatasource: LocalDatasource) {
 }

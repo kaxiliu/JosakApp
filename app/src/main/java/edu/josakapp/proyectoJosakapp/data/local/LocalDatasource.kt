@@ -3,8 +3,8 @@ package edu.josakapp.proyectoJosakapp.data.local
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
 
-class LocalDataSource(
-    private val userDao: UserDAO,
+class LocalDatasource(
+    private val userDao: UserDao,
     private val habitosDao: HabitosDao
 ) {
 
