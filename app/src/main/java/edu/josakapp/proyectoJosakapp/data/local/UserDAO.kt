@@ -1,4 +1,4 @@
-package edu.josakapp.proyectoJosakapp.data
+package edu.josakapp.proyectoJosakapp.data.local
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,6 @@ import androidx.room.Transaction
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.data.model.UserWithHabito
-import edu.josakapp.proyectoJosakapp.data.model.UserWithPinguino
 import kotlinx.coroutines.flow.Flow
 
 @Dao

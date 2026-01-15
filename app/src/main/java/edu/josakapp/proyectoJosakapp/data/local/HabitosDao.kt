@@ -1,4 +1,4 @@
-package edu.josakapp.proyectoJosakapp.data.datasource
+package edu.josakapp.proyectoJosakapp.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -18,13 +18,13 @@ interface HabitosDao {
     // Devuelve un Flow con la lista de todas las marcas
     // ordenadas por nombre
     @Query("SELECT * FROM Habito ORDER BY nombre")
-    fun getAllHabitos():Flow<List<Habito>>
+    fun getAllHabitos(): Flow<List<Habito>>
 
     // Devuelve un Flow con la lista de coches junto con sus marcas,
     // ordenados por el modelo del coche
     @Transaction  // Permite obtener datos de varias tablas relacionadas con una sola consulta.
     @Query("SELECT * FROM Habito ORDER BY id_usuario")
-    fun getUsersWithHabitos():Flow<List<UserWithHabito>>
+    fun getUsersWithHabitos(): Flow<List<UserWithHabito>>
 
     //Devuelve un Flow con un coche específico por su ID
     @Query("SELECT * FROM Habito WHERE id_habito = :id")
@@ -34,11 +34,11 @@ interface HabitosDao {
 
 
     //Inserta una nueva usuario
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertUser(user: User)
 
     //Inserta un nuevo habito
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertHabito(habito: Habito)
 
     //Elimina un habito
