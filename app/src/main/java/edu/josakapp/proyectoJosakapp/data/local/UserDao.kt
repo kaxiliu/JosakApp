@@ -9,7 +9,7 @@ import edu.josakapp.proyectoJosakapp.data.model.UserWithHabito
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface UserDAO {
+interface UserDao {
 
     /**Para poder consultar los hábitos de un usuario en concreto*/
     @Transaction
