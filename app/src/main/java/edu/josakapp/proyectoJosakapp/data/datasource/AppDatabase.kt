@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import edu.josakapp.proyectoJosakapp.data.local.HabitosDao
-import edu.josakapp.proyectoJosakapp.data.local.UserDAO
+import edu.josakapp.proyectoJosakapp.data.local.UserDao
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
 
@@ -17,7 +17,7 @@ import edu.josakapp.proyectoJosakapp.data.model.User
 
 abstract class AppDatabase: RoomDatabase() {
     abstract fun habitosDAO(): HabitosDao // Conexión con DAO de Habito
-    abstract fun usersDAO(): UserDAO // Conexión con DAO de Usuario
+    abstract fun usersDAO(): UserDao // Conexión con DAO de Usuario
 
     companion object {
         @Volatile
