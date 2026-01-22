@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -44,9 +45,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.ui.theme.verdeNeon
 
-
 /**Pantalla encargada de el login del usuario*/
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeScreen(name: String,
@@ -63,7 +62,6 @@ fun HomeScreen(name: String,
         Box(
             modifier = Modifier.fillMaxSize()
         ){
-            encabezadoHome()
             /**Agregamos la imagen*/
             Image(
                 painter = painterResource(id = R.drawable.fondo_claro),
@@ -71,24 +69,27 @@ fun HomeScreen(name: String,
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.Crop
             )
+           // encabezadoHome()
+
             Box(
                 modifier = Modifier
+                    .fillMaxWidth(0.9f)
                     .align(Alignment.Center)
-                    .padding(horizontal = 32.dp)
-                 //   .matchParentSize()
-                //    .background(Color.Black.copy(alpha = 0.6f))
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(16.dp)),
-                 //   .background(Color.White.copy(alpha = 0.7f))
-            )
-            cuerpoHome(onGoSecondScreen,
-                onGoRegisterScreen, onGoForgotPasswordScreen)
+                    .background(
+                        Color.White.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(28.dp)
+                    )
+                    .border(1.dp, Color.White.copy(0.3f), RoundedCornerShape(28.dp))
+            ){
+                cuerpoHome(onGoSecondScreen,
+                    onGoRegisterScreen, onGoForgotPasswordScreen)
 
+            }
         }
     }
 }
 /**Aqui nos encargaremos del encabezado y cuerpo */
-@Composable
+/*@Composable
 fun encabezadoHome() {
     Row(
         modifier = Modifier
@@ -117,7 +118,7 @@ fun encabezadoHome() {
                 .width(50.dp)
         )
     }
-}
+}*/
 @Composable
 fun cuerpoHome(onGoSecondScreen: () -> Unit,
                onGoRegisterScreen: () -> Unit,
@@ -125,20 +126,12 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
     var name by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     Column (
-        modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 32.dp),
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .padding(vertical = 24.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        /**Agregamos icono
-        Icon(
-            painter=painterResource(R.drawable.outline_chess_queen_24),
-            contentDescription = "icono",
-            modifier = Modifier
-                .height(100.dp)
-                .width(100.dp),
-            tint = Color.White
-        ) */
         Text(text = stringResource(R.string.acceso),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
@@ -180,7 +173,7 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             },
             shape = RoundedCornerShape(25.dp),
             modifier = Modifier
-                .width(280.dp) // 👈 mismo ancho que el de arriba
+                .width(280.dp)
                 .border(1.dp, Color.White, RoundedCornerShape(25.dp)),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -252,7 +245,8 @@ fun socialLoginIcon(iconRes: Int, onClick: () -> Unit){
         contentDescription = null,
         modifier = Modifier
             .size(50.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        tint = Color.Unspecified
     )
 }
 
