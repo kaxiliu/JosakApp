@@ -16,6 +16,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
+    var name by mutableStateOf("")
+        private set
+
+    fun updateName(newName: String) {
+        name = newName
+    }
+
 
     private val _habitos = MutableStateFlow<List<Habito>>(emptyList())
     val habitos: StateFlow<List<Habito>> = _habitos.asStateFlow()
@@ -26,12 +33,7 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
     private val habitosRepository: HabitosRepository
 
     private val rankingRepository: RankingRepository
-    var name by mutableStateOf("")
-        private set
 
-    fun updateName(value: String) {
-        name = value
-    }
 
     init {
         val database = AppDatabase.getInstance(application)
