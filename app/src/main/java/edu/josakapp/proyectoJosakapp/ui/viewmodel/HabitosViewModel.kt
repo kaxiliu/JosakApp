@@ -7,11 +7,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
+import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val _habitos = MutableStateFlow<List<Habito>>(emptyList())
+    val habitos: StateFlow<List<Habito>> = _habitos.asStateFlow()
 
     private val localDatasource: LocalDatasource
 

@@ -16,13 +16,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -40,6 +42,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,13 +50,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import edu.josakapp.proyectoJosakapp.R
+import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
+import edu.josakapp.proyectoJosakapp.ui.components.HabitoCard
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 
 /*
 @Composable
@@ -84,12 +93,12 @@ fun HabitoScreen() {
 }
 */
 @Composable
-fun HabitoScreen() {
+fun HabitoScreen(viewModel: HabitosViewModel) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
+    val habito:List<Habito> by viewModel.habitos.collectAsState()
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize())
+    {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = painterResource(id = R.drawable.background),
@@ -102,22 +111,68 @@ fun HabitoScreen() {
                     .matchParentSize()
                     .background(Color.Black.copy(alpha = 0.6f))
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(5.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    //El icono de Menu
+                    IconButton(onClick = { }, modifier = Modifier.weight(1f))
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
 
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = Color.White
-                    )
+                    //El icono de Añadir
+                    IconButton(onClick = { showDialog = true }, modifier = Modifier.weight(1f))
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
+                    //Dias continuados
+                    IconButton(onClick = { }, modifier = Modifier.weight(1f))
+                    {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.fire),
+                            contentDescription = "fire",
+                            tint = Color.Red
+                        )
+                    }
+                    //Experencia
+                    IconButton(onClick = { }, modifier = Modifier.weight(1f))
+                    {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.money),
+                            contentDescription = "money",
+                            tint = Color.Yellow
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                CalendarCard()
+                Spacer(modifier = Modifier.height(20.dp))
+                if (habito.isNotEmpty()){
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(habito) { habit ->
+                            HabitoCard(
+                                habito = habit,
+                                onClick = { /*   */ },
+                                onLongClick = { /*   */ }
+                            )
+                        }
+                    }
                 }
             }
+
         /*
             Text(
                 text = "contenido",
@@ -136,6 +191,8 @@ fun HabitoScreen() {
         }
     }
 }
+
+
 
 @Composable
 fun AnyadirHabito(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {

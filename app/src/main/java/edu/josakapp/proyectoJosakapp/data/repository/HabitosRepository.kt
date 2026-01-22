@@ -3,11 +3,9 @@ package edu.josakapp.proyectoJosakapp.data.repository
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 //import edu.josakapp.proyectoJosakapp.data.remote.RemoteDataSource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import kotlinx.coroutines.flow.Flow
 
-class HabitosRepository(
-    private val local: LocalDatasource,
-    //private val remote: RemoteDataSource
-) {
+class HabitosRepository(private val local: LocalDatasource) {
 
     fun getAllHabitos() = local.getAllHabitos()
 
@@ -18,6 +16,4 @@ class HabitosRepository(
     suspend fun insertHabito(habito: Habito) = local.insertHabito(habito)
 
     suspend fun deleteHabito(habito: Habito) = local.deleteHabito(habito)
-
-    //suspend fun syncHabitos(userId: Int) = remote.syncHabitos(userId)
 }
