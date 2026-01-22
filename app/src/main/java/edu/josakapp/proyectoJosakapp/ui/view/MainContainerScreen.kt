@@ -7,12 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 
 @Composable
 fun MainContainerScreen() {
@@ -20,7 +22,7 @@ fun MainContainerScreen() {
     // (hábito <-> ranking <-> tienda).
 
     val bottomNavController = rememberNavController()
-
+    val habitosViewModel: HabitosViewModel= viewModel()
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -101,17 +103,18 @@ fun MainContainerScreen() {
 
         NavHost(
             navController = bottomNavController,
+
             startDestination = NavScreens.NavHabitoScreen.ruta,
             modifier = Modifier.padding(innerPadding)
         ) {
 
             composable(NavScreens.NavHabitoScreen.ruta) {
-                HabitoScreen()
+                HabitoScreen(habitosViewModel)
             }
 
 
             composable(NavScreens.NavRankingScreen.ruta) {
-                Text("Ranking Screen")
+                RankingScreen()
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
