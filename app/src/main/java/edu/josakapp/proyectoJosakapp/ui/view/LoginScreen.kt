@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -37,8 +38,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -132,32 +135,27 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text(text = stringResource(R.string.acceso),
+        /*Text(text = stringResource(R.string.acceso),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.DarkGray
         )
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(40.dp))*/
         TextField(
             value = name,
             onValueChange = {name=it},
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "name")
-            },
             placeholder = {
                 Text(text = stringResource(R.string.introduce_nombre))
             },
-            shape = RoundedCornerShape(25.dp),
             modifier = Modifier
-                .width(280.dp)
-                .border(1.dp, Color.White, RoundedCornerShape(25.dp)),
+                .width(280.dp),
             colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Gray,
+                unfocusedIndicatorColor = Color.LightGray
             ),
-            maxLines = 1
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -165,30 +163,37 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
         TextField(
             value = pass,
             onValueChange = { pass = it },
-            leadingIcon = {
-                Icon(painter = painterResource(R.drawable.baseline_password_24), contentDescription = "pass")
-            },
             placeholder = {
                 Text(text = stringResource(R.string.introduce_contrasena))
             },
-            shape = RoundedCornerShape(25.dp),
             modifier = Modifier
-                .width(280.dp)
-                .border(1.dp, Color.White, RoundedCornerShape(25.dp)),
+                .width(280.dp),
             colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Gray,
+                unfocusedIndicatorColor = Color.LightGray
             ),
             singleLine = true,
             label = {   Text(text = stringResource(R.string.introduce_contrasena)) },
             visualTransformation = PasswordVisualTransformation()
         )
-
-
         Spacer(modifier = Modifier.height(20.dp))
-
+        Button(
+            onClick = onGoSecondScreen,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4DD0E1),
+                contentColor = Color.White
+            ),
+            modifier = Modifier.width(130.dp)
+                .height(50.dp)
+        ) {
+            Text(text = stringResource(R.string.entrar),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -197,32 +202,34 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = stringResource(R.string.registrarse),
-                color = Color.White,
+                color = Color.Gray,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable{onGoRegisterScreen()}
+                    .clickable{onGoRegisterScreen(/**Le tendra que llegar a registrar el correo*/)}
             )
+            /**Separador entre registrarse y olvide la contraseña*/
+            Text(
+                text = "|",
+                color = Color.Gray,
+                fontSize = 29.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+            /***/
             Text(text = stringResource(R.string.contrasena_olvidada),
-                color = Color.White,
+                color = Color.Gray,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable{onGoForgotPasswordScreen()}
+                    .clickable{onGoForgotPasswordScreen(/**Ir a pantalla de contraseña olgidad */)}
             )
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            onClick = onGoSecondScreen,
-            modifier = Modifier.width(200.dp)
-                .height(50.dp)
-        ) {
-            Text(text = stringResource(R.string.entrar),
-                fontSize = 18.sp)
-        }
+        Spacer(modifier = Modifier.height(10.dp))
+
 
         /***Despues del boton se debe de añadir un acceso rapido */
         Row(
