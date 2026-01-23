@@ -10,5 +10,6 @@
     <string name="contrasena_olvidada">Olvide mi\n contraseña</string>
     <string name="segunda_pantalla">Segunda pantalla</string>
     <string name="bienvenido_usuario">Bienvenido %s</string>
+    <string name="txt_acceso_rapido">Acceso rápido</string>
 
 </resources>

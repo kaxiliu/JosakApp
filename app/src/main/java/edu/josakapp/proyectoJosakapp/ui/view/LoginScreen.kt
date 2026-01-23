@@ -135,12 +135,6 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        /*Text(text = stringResource(R.string.acceso),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray
-        )
-        Spacer(modifier = Modifier.height(40.dp))*/
         TextField(
             value = name,
             onValueChange = {name=it},
@@ -230,7 +224,20 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
 
         Spacer(modifier = Modifier.height(10.dp))
 
-
+        Row(
+            modifier = Modifier.width(280.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.weight(1f).height(1.dp).background(Color.LightGray))
+            Text(
+                text = stringResource(R.string.txt_acceso_rapido),
+                color = Color.Gray,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(horizontal = 10.dp)
+            )
+            Box(modifier = Modifier.weight(1f).height(1.dp).background(Color.LightGray))
+        }
+        Spacer(modifier = Modifier.height(10.dp))
         /***Despues del boton se debe de añadir un acceso rapido */
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -251,7 +258,7 @@ fun socialLoginIcon(iconRes: Int, onClick: () -> Unit){
         painter = painterResource(iconRes),
         contentDescription = null,
         modifier = Modifier
-            .size(50.dp)
+            .size(40.dp)
             .clickable(onClick = onClick),
         tint = Color.Unspecified
     )
