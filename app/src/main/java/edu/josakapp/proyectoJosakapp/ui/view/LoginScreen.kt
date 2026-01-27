@@ -88,37 +88,6 @@ fun HomeScreen(name: String,
         }
     }
 }
-/**Aqui nos encargaremos del encabezado y cuerpo */
-/*@Composable
-fun encabezadoHome() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ){
-        Text(text = stringResource(R.string.nombre_empresa),
-            color = verdeNeon,
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .weight(1f)
-        )
-        Text(text = stringResource(R.string.usuario),
-            color = verdeNeon,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(15.dp)
-        )
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "icono",
-            modifier = Modifier
-                .height(50.dp)
-                .width(50.dp)
-        )
-    }
-}*/
 @Composable
 fun cuerpoHome(onGoSecondScreen: () -> Unit,
                onGoRegisterScreen: () -> Unit,
