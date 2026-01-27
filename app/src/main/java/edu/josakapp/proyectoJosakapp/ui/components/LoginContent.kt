@@ -86,7 +86,7 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             label = {   Text(text = stringResource(R.string.introduce_contrasena)) },
             visualTransformation = PasswordVisualTransformation()
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Button(
             onClick = onGoSecondScreen,
             shape = RoundedCornerShape(10.dp),
