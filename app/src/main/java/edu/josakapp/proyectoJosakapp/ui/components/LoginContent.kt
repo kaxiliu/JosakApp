@@ -91,7 +91,7 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             onClick = onGoSecondScreen,
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4DD0E1),
+                containerColor = Color(0xFF7BB7F5),
                 contentColor = Color.White
             ),
             modifier = Modifier.width(130.dp)
