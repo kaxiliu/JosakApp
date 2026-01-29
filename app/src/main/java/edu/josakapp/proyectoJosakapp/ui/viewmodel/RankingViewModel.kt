@@ -1,7 +1,9 @@
 package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.UserRanking
 import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
@@ -9,10 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class RankingViewModel(
-    private val repository: RankingRepository = RankingRepository(),
+class RankingViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = RankingRepository()
     private val localDatasource: LocalDatasource
-) : ViewModel() {
 
     private val _ranking = MutableStateFlow<List<UserRanking>>(emptyList())
     val ranking: StateFlow<List<UserRanking>> = _ranking
@@ -24,7 +26,13 @@ class RankingViewModel(
     val amigos: StateFlow<List<String>> = _amigos
 
     init {
-        // Cargar amigos desde Room
+        val database = AppDatabase.getInstance(application)
+        localDatasource = LocalDatasource(
+            database.usersDAO(),
+            database.habitosDAO(),
+            database.amigosDAO()
+        )
+
         viewModelScope.launch {
             localDatasource.getAmigos().collect { lista ->
                 _amigos.value = lista.map { it.nombre }
@@ -32,7 +40,6 @@ class RankingViewModel(
             }
         }
 
-        // Recargar ranking al cambiar modo
         viewModelScope.launch {
             soloAmigos.collect {
                 loadRanking()

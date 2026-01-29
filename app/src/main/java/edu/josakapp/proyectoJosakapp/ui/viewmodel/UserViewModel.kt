@@ -18,7 +18,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         val database = AppDatabase.getInstance(application)
         val localDatasource = LocalDatasource(
             database.usersDAO(),
-            database.habitosDAO()
+            database.habitosDAO(),
+            database.amigosDAO()
         )
 
         userRepository = UserRepository(localDatasource, AuthService())

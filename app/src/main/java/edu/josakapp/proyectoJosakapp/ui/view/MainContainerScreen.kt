@@ -15,14 +15,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
 
 @Composable
 fun MainContainerScreen() {
-    // Solo maneja el cambio dentro de la barra inferior
-    // (hábito <-> ranking <-> tienda).
 
     val bottomNavController = rememberNavController()
-    val habitosViewModel: HabitosViewModel= viewModel()
+
+    // ViewModels compartidos dentro del contenedor
+    val habitosViewModel: HabitosViewModel = viewModel()
+    val rankingViewModel: RankingViewModel = viewModel()
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -33,35 +36,33 @@ fun MainContainerScreen() {
                     selected = currentRoute == NavScreens.NavHabitoScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavHabitoScreen.ruta) {
-                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
                     },
-                    icon = { Icon(Icons.Default.Home, "Hábitos") },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Hábitos") },
                     label = { Text("Hábitos") }
                 )
 
-                // RankingScreen
                 NavigationBarItem(
                     selected = currentRoute == NavScreens.NavRankingScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavRankingScreen.ruta) {
-                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
                     },
-                    icon = { Icon(Icons.Default.Star, "Ranking") },
+                    icon = { Icon(Icons.Default.Star, contentDescription = "Ranking") },
                     label = { Text("Ranking") }
                 )
 
-                // 3. Tienda
                 NavigationBarItem(
                     selected = currentRoute == NavScreens.NavTiendaScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavTiendaScreen.ruta) {
-                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -70,12 +71,11 @@ fun MainContainerScreen() {
                     label = { Text("Tienda") }
                 )
 
-                // 4.Pinguino
                 NavigationBarItem(
                     selected = currentRoute == NavScreens.NavPinguinoScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavPinguinoScreen.ruta) {
-                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -84,12 +84,11 @@ fun MainContainerScreen() {
                     label = { Text("Pingüino") }
                 )
 
-                // 5. Ajustes
                 NavigationBarItem(
                     selected = currentRoute == NavScreens.NavAjusteScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta) {
-                            popUpTo(bottomNavController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -103,7 +102,6 @@ fun MainContainerScreen() {
 
         NavHost(
             navController = bottomNavController,
-
             startDestination = NavScreens.NavHabitoScreen.ruta,
             modifier = Modifier.padding(innerPadding)
         ) {
@@ -112,9 +110,8 @@ fun MainContainerScreen() {
                 HabitoScreen(habitosViewModel)
             }
 
-
             composable(NavScreens.NavRankingScreen.ruta) {
-             //   RankingScreen()
+                RankingScreen(rankingViewModel)
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
@@ -126,7 +123,7 @@ fun MainContainerScreen() {
             }
 
             composable(NavScreens.NavAjusteScreen.ruta) {
-                Text("Ajustre")
+                Text("Ajuste")
             }
         }
     }

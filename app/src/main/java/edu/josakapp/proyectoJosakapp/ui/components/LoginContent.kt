@@ -37,26 +37,29 @@ import edu.josakapp.proyectoJosakapp.R
 /**Se decidio crear este archivo para que se vea más ordenado*/
 /**Aqui tenemos todo lo que sería el cuerpo de nuestro LoginScreen*/
 @Composable
-fun cuerpoHome(onGoSecondScreen: () -> Unit,
-               onGoRegisterScreen: () -> Unit,
-               onGoForgotPasswordScreen: () -> Unit   ){
-    var name by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    Column (
-        modifier = Modifier.fillMaxWidth()
+fun cuerpoHome(
+    name: String,
+    pass: String,
+    onNameChange: (String) -> Unit,
+    onPassChange: (String) -> Unit,
+    onGoSecondScreen: () -> Unit,
+    onGoRegisterScreen: () -> Unit,
+    onGoForgotPasswordScreen: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
             .wrapContentHeight()
             .padding(vertical = 24.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
+
         TextField(
             value = name,
-            onValueChange = {name=it},
-            placeholder = {
-                Text(text = stringResource(R.string.introduce_nombre))
-            },
-            modifier = Modifier
-                .width(280.dp),
+            onValueChange = onNameChange,
+            placeholder = { Text(text = stringResource(R.string.introduce_nombre)) },
+            modifier = Modifier.width(280.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
@@ -70,12 +73,9 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
 
         TextField(
             value = pass,
-            onValueChange = { pass = it },
-            placeholder = {
-                Text(text = stringResource(R.string.introduce_contrasena))
-            },
-            modifier = Modifier
-                .width(280.dp),
+            onValueChange = onPassChange,
+            placeholder = { Text(text = stringResource(R.string.introduce_contrasena)) },
+            modifier = Modifier.width(280.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
@@ -83,10 +83,12 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
                 unfocusedIndicatorColor = Color.LightGray
             ),
             singleLine = true,
-            label = {   Text(text = stringResource(R.string.introduce_contrasena)) },
+            label = { Text(text = stringResource(R.string.introduce_contrasena)) },
             visualTransformation = PasswordVisualTransformation()
         )
+
         Spacer(modifier = Modifier.height(40.dp))
+
         Button(
             onClick = onGoSecondScreen,
             shape = RoundedCornerShape(10.dp),
@@ -94,14 +96,17 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
                 containerColor = Color(0xFF7BB7F5),
                 contentColor = Color.White
             ),
-            modifier = Modifier.width(130.dp)
+            modifier = Modifier
+                .width(130.dp)
                 .height(50.dp)
         ) {
-            Text(text = stringResource(R.string.entrar),
+            Text(
+                text = stringResource(R.string.entrar),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,29 +114,32 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = stringResource(R.string.registrarse),
+            Text(
+                text = stringResource(R.string.registrarse),
                 color = Color.Gray,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable{onGoRegisterScreen(/**Le tendra que llegar a registrar el correo*/)}
+                    .clickable { onGoRegisterScreen() }
             )
-            /**Separador entre registrarse y olvide la contraseña*/
+
             Text(
                 text = "|",
                 color = Color.Gray,
                 fontSize = 29.sp,
                 modifier = Modifier.padding(8.dp)
             )
-            Text(text = stringResource(R.string.contrasena_olvidada),
+
+            Text(
+                text = stringResource(R.string.contrasena_olvidada),
                 color = Color.Gray,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Light,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable{onGoForgotPasswordScreen(/**Ir a pantalla de contraseña olgidad */)}
+                    .clickable { onGoForgotPasswordScreen() }
             )
         }
 
@@ -150,16 +158,17 @@ fun cuerpoHome(onGoSecondScreen: () -> Unit,
             )
             Box(modifier = Modifier.weight(1f).height(1.dp).background(Color.LightGray))
         }
+
         Spacer(modifier = Modifier.height(10.dp))
-        /***Despues del boton se debe de añadir un acceso rapido */
+
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
         ) {
-            socialLoginIcon(R.drawable.ic_google) {/*Accion de entrar con google*/}
-            socialLoginIcon(R.drawable.ic_facebook) {/*Accion de entrar con google*/}
-            //  socialLoginIcon(R.drawable.ic_twitter) {/*Accion de entrar con google*/}
-            socialLoginIcon(R.drawable.ic_appel) {/*Accion de entrar con google*/}
+            socialLoginIcon(R.drawable.ic_google) {}
+            socialLoginIcon(R.drawable.ic_facebook) {}
+            socialLoginIcon(R.drawable.ic_appel) {}
         }
     }
 }
+

@@ -14,43 +14,47 @@ import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 
 
 @Composable
-fun NavigationHost(navController: NavHostController){
+fun NavigationHost(navController: NavHostController) {
+
     val vm: HabitosViewModel = viewModel()
-    val context = LocalContext.current
 
     NavHost(
         navController = navController,
         startDestination = NavScreens.NavMainScreen.ruta
     ) {
-        composable (
-            NavScreens.NavMainScreen.ruta
-        ){
+
+        // LOGIN
+        composable(NavScreens.NavMainScreen.ruta) {
             HomeScreen(
                 name = vm.name,
                 onNameChange = vm::updateName,
-                onGoSecondScreen = {navController.navigate("main_container")},
-                onGoRegisterScreen = {navController.navigate(NavScreens.NavRegisterScreen.ruta)},
-                onGoForgotPasswordScreen = {navController.navigate(NavScreens.NavForgotPasswordScreen.ruta)}
-
-                /**Creo que aqui tiene que tener botone de registrarse y recuperar contraseña*/
+                onGoSecondScreen = {
+                    navController.navigate(NavScreens.NavMainContainerScreen.ruta) {
+                        popUpTo(NavScreens.NavMainScreen.ruta) { inclusive = true }
+                    }
+                },
+                onGoRegisterScreen = {
+                    navController.navigate(NavScreens.NavRegisterScreen.ruta)
+                },
+                onGoForgotPasswordScreen = {
+                    navController.navigate(NavScreens.NavForgotPasswordScreen.ruta)
+                }
             )
         }
-        /**REGISTER */
+
+        // REGISTER
         composable(NavScreens.NavRegisterScreen.ruta) {
             RegisterScreen()
         }
-        /**PASSWORD FORGOT*/
+
+        // FORGOT PASSWORD
         composable(NavScreens.NavForgotPasswordScreen.ruta) {
             ForgotPasswordScreen()
         }
-        composable("main_container") {
+
+        // MAIN CONTAINER (Bottom Navigation)
+        composable(NavScreens.NavMainContainerScreen.ruta) {
             MainContainerScreen()
         }
-        /*
-        composable ( NavScreens.NavHabitoScreen.ruta ) {
-            val productos = vm.productos
-            HabitoScreen()
-        }*/
     }
 }
-
