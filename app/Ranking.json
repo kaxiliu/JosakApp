@@ -1,0 +1,20 @@
+[
+  {
+    "nombre_usuario": "Jorge",
+    "puntos": 1100,
+    "nivel": 4,
+    "fotoPerfil": "https://example.com/foto1.png"
+  },
+  {
+    "nombre_usuario": "Kaxi",
+    "puntos": 1200,
+    "nivel": 5,
+    "fotoPerfil": "https://example.com/foto2.png"
+  },
+  {
+    "nombre_usuario": "Salet",
+    "puntos": 1000,
+    "nivel": 3,
+    "fotoPerfil": "https://example.com/foto3.png"
+  }
+]
