@@ -29,7 +29,7 @@ fun NavigationHost(navController: NavHostController) {
     val localDatasource = LocalDatasource(
         userDao = database.usersDAO(),
         habitosDao = database.habitosDAO(),
-        amigosDao = database.amigosDao()
+        amigosDao = database.amigosDAO()
     )
 
     // ViewModels

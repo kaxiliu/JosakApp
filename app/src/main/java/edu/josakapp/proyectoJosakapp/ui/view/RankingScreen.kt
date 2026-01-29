@@ -22,7 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 
 @Composable
-fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
+fun RankingScreen(viewModel: RankingViewModel) {
 
     val ranking by viewModel.ranking.collectAsState()
     val soloAmigos by viewModel.soloAmigos.collectAsState()
