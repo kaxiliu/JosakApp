@@ -40,4 +40,3 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         habitosRepository = HabitosRepository(localDatasource)
     }
 }
-}
