@@ -1,11 +1,13 @@
 package edu.josakapp.proyectoJosakapp.data.local
 
+import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
 
 class LocalDatasource(
     private val userDao: UserDao,
-    private val habitosDao: HabitosDao
+    private val habitosDao: HabitosDao,
+    private val amigosDao: AmigosDao
 ) {
 
     // -------------------------
@@ -36,6 +38,12 @@ class LocalDatasource(
     suspend fun deleteHabito(habito: Habito) = habitosDao.deleteHabito(habito)
 
 
+    // -------------------------
+    // AMIGOS DAO
+    // -------------------------
 
+    fun getAmigos() = amigosDao.getAmigos()
 
+    suspend fun insertAmigo(nombre: String) =
+        amigosDao.insertAmigo(Amigo(nombre))
 }

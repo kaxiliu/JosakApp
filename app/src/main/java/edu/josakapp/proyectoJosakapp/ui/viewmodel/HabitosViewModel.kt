@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
-import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
@@ -40,10 +39,8 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         val database = AppDatabase.getInstance(application)
         val userDao = database.usersDAO()
         val habitosDao = database.habitosDAO()
-
-        val authService = AuthService()
         localDatasource = LocalDatasource(userDao, habitosDao)
-        userRepository = UserRepository(localDatasource,authService)
+        userRepository = UserRepository(localDatasource)
         habitosRepository = HabitosRepository(localDatasource)
         rankingRepository = RankingRepository(localDatasource)
     }

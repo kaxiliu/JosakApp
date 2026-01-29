@@ -1,25 +1,9 @@
 package edu.josakapp.proyectoJosakapp.data.repository
 
-import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
+import edu.josakapp.proyectoJosakapp.data.datasource.RankingRemoteDataSource
 
 class RankingRepository(
-    private val local: LocalDatasource
-    // private val remote: RemoteDataSource
+    private val remote: RankingRemoteDataSource = RankingRemoteDataSource()
 ) {
-
-    // Cuando tengamos RemoteDataSource
-
-    suspend fun getGlobalRanking(): List<Any> {
-        // TODO: implementar cuando tengamos RemoteDataSource
-        return emptyList()
-    }
-
-    suspend fun getFriendsRanking(userId: Int): List<Any> {
-        // TODO: implementar cuando tengamos RemoteDataSource
-        return emptyList()
-    }
-
-    suspend fun updateUserScore(userId: Int, score: Int) {
-        // TODO: implementar cuando tengamos RemoteDataSource
-    }
+    suspend fun getRanking() = remote.getRanking()
 }

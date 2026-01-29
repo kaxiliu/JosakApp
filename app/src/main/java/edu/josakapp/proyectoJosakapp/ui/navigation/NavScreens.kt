@@ -15,6 +15,6 @@ sealed class NavScreens(val ruta: String) {
      * si se olvida la contraseña
      */
     object NavRegisterScreen: NavScreens("register")
-    object NavForgotPasswordScreen: NavScreens("forgotPassword")
+    object NavForgotPasswordScreen: NavScreens("forgot_Password")
 
 }
