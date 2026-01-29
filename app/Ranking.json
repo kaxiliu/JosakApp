@@ -3,19 +3,26 @@
     "nombre_usuario": "Jorge",
     "puntos": 1100,
     "nivel": 4,
-    "fotoPerfil": "https://example.com/foto1.png"
+    "fotoPerfil": "https://i.pinimg.com/236x/7f/a1/a7/7fa1a73b6b4f80bae410980c6d91fa34.jpg"
   },
   {
     "nombre_usuario": "Kaxi",
     "puntos": 1200,
     "nivel": 5,
-    "fotoPerfil": "https://example.com/foto2.png"
+    "fotoPerfil": "https://i.pinimg.com/236x/3b/6d/f5/3b6df52ef39a44bd185b6950822ffb08.jpg"
   },
   {
     "nombre_usuario": "Salet",
     "puntos": 1000,
     "nivel": 3,
-    "fotoPerfil": "https://example.com/foto3.png"
+    "fotoPerfil": "https://pbs.twimg.com/media/EA77_CkUEAE0Zp6.png"
+  },
+  {
+    "nombre_usuario": "Begoña",
+    "puntos": 2000,
+    "nivel": 10,
+    "fotoPerfil": "https://i.pinimg.com/474x/74/f4/47/74f4472cf6a3977e32e6bb8015bc7ae9.jpg"
   }
+  
 ]
 
