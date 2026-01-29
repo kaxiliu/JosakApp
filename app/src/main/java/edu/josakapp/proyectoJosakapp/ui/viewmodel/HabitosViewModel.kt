@@ -9,13 +9,13 @@ import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
-import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
+
     var name by mutableStateOf("")
         private set
 
@@ -33,9 +33,18 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         val database = AppDatabase.getInstance(application)
+
         val userDao = database.usersDAO()
         val habitosDao = database.habitosDAO()
-        localDatasource = LocalDatasource(userDao, habitosDao)
+        val amigosDao = database.amigosDAO()   // ← AÑADIDO
+
+        // Ahora sí: pasamos los 3 DAOs
+        localDatasource = LocalDatasource(
+            userDao = userDao,
+            habitosDao = habitosDao,
+            amigosDao = amigosDao
+        )
+
         userRepository = UserRepository(localDatasource)
         habitosRepository = HabitosRepository(localDatasource)
     }
