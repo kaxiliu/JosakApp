@@ -9,6 +9,7 @@ import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
+import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,6 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         name = newName
     }
 
-
     private val _habitos = MutableStateFlow<List<Habito>>(emptyList())
     val habitos: StateFlow<List<Habito>> = _habitos.asStateFlow()
 
@@ -31,9 +31,6 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
     private val userRepository: UserRepository
     private val habitosRepository: HabitosRepository
 
-    private val rankingRepository: RankingRepository
-
-
     init {
         val database = AppDatabase.getInstance(application)
         val userDao = database.usersDAO()
@@ -41,6 +38,6 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         localDatasource = LocalDatasource(userDao, habitosDao)
         userRepository = UserRepository(localDatasource)
         habitosRepository = HabitosRepository(localDatasource)
-        rankingRepository = RankingRepository(localDatasource)
     }
+}
 }
