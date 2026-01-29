@@ -11,16 +11,27 @@ import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
 @Composable
-fun NavigationHost(navController: NavHostController){
+fun NavigationHost(
+    navController: NavHostController,
+    userViewModel: UserViewModel = viewModel()) {
+
     val vm: HabitosViewModel = viewModel()
     val context = LocalContext.current
 
+    /**Se hace esto para que compruebe que si el usuario no esta logeado , que vaya a registrarse, y
+     * si si esta que se diriga a la segunda pantalla*/
+    val inicio = if ( userViewModel.isUserLogged()) {
+        "main_container"
+    } else {
+        NavScreens.NavMainScreen.ruta
+    }
     NavHost(
         navController = navController,
-        startDestination = NavScreens.NavMainScreen.ruta
+        startDestination = inicio
     ) {
         composable (
             NavScreens.NavMainScreen.ruta
