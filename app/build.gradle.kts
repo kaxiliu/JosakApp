@@ -68,6 +68,9 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.play.services.games)
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2") // Soporte para Coroutines y Kotlin Extensions.
     ksp("androidx.room:room-compiler:2.7.2") // KSP para procesamiento de anotaciones.

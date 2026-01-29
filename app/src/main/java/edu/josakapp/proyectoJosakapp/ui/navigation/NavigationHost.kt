@@ -10,6 +10,7 @@ import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
+import edu.josakapp.proyectoJosakapp.ui.view.RankingScreen
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 
 @Composable
@@ -56,6 +57,11 @@ fun NavigationHost(navController: NavHostController) {
         /** MAIN CONTAINER */
         composable("main_container") {
             MainContainerScreen()
+        }
+
+        /** RANKING */
+        composable("ranking") {
+            RankingScreen()
         }
     }
 }
