@@ -26,9 +26,7 @@ fun NavigationHost(navController: NavHostController) {
         /** HOME */
         composable(NavScreens.NavMainScreen.ruta) {
             HomeScreen(
-                name = vm.name,
-                onNameChange = vm::updateName,
-                onGoSecondScreen = { navController.navigate("main_container") },
+                onGoSecondScreen = { navController.navigate(NavScreens.NavSecondScreen.ruta) },
                 onGoRegisterScreen = { navController.navigate(NavScreens.NavRegisterScreen.ruta) },
                 onGoForgotPasswordScreen = { navController.navigate(NavScreens.NavForgotPasswordScreen.ruta) }
             )
@@ -36,31 +34,31 @@ fun NavigationHost(navController: NavHostController) {
 
         /** REGISTER */
         composable(NavScreens.NavRegisterScreen.ruta) {
-        RegisterScreen(
-            onRegister = { name, email, password ->
-                // Aquí pondrás la lógica de registro
-            },
-            onGoLogin = {
-                navController.popBackStack()
-            }
-        )
-    }
+            RegisterScreen(
+                onRegister = { name, email, password ->
+                    // Aquí pondrás la lógica de registro
+                },
+                onGoLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
 
         /** FORGOT PASSWORD */
         composable(NavScreens.NavForgotPasswordScreen.ruta) {
             ForgotPasswordScreen { email ->
-
+                // Aquí pondrás la lógica de recuperación de contraseña
             }
         }
 
         /** MAIN CONTAINER */
-        composable("main_container") {
+        composable(NavScreens.NavSecondScreen.ruta) {
             MainContainerScreen()
         }
 
         /** RANKING */
-        composable("ranking") {
+        composable(NavScreens.NavRankingScreen.ruta) {
             RankingScreen()
         }
     }

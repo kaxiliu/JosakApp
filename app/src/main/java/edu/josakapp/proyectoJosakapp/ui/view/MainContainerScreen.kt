@@ -108,8 +108,9 @@ fun MainContainerScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
 
+
             composable(NavScreens.NavHabitoScreen.ruta) {
-                HabitoScreen(habitosViewModel)
+                HabitoScreen(habitosViewModel, userId=0 )//TODO user
             }
 
 

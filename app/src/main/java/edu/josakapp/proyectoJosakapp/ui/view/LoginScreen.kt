@@ -31,9 +31,7 @@ import edu.josakapp.proyectoJosakapp.ui.components.cuerpoHome
 /**Ver parametros de name y pass*/
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomeScreen(name: String,
-               onNameChange: (String) -> Unit,
-               onGoSecondScreen: () -> Unit,
+fun HomeScreen(onGoSecondScreen: () -> Unit,
                onGoRegisterScreen: () -> Unit,
                onGoForgotPasswordScreen: () -> Unit){
     var name by remember {mutableStateOf("")}

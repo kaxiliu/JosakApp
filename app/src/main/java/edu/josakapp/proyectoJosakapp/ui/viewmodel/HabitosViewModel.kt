@@ -1,42 +1,90 @@
 package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
-import edu.josakapp.proyectoJosakapp.data.repository.RankingRepository
-import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
-    var name by mutableStateOf("")
-        private set
-
-    fun updateName(newName: String) {
-        name = newName
-    }
 
     private val _habitos = MutableStateFlow<List<Habito>>(emptyList())
     val habitos: StateFlow<List<Habito>> = _habitos.asStateFlow()
 
-    private val localDatasource: LocalDatasource
-
-    private val userRepository: UserRepository
     private val habitosRepository: HabitosRepository
 
     init {
         val database = AppDatabase.getInstance(application)
-        val userDao = database.usersDAO()
-        val habitosDao = database.habitosDAO()
-        localDatasource = LocalDatasource(userDao, habitosDao)
-        userRepository = UserRepository(localDatasource)
+        val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO())
         habitosRepository = HabitosRepository(localDatasource)
+    }
+
+    /**Cargar hábitos de un usuario específico*/
+    fun loadHabitos(userId: Int) {
+        viewModelScope.launch {
+            habitosRepository.getHabitosByUserId(userId)
+                .catch { e ->
+                    Log.e("HabitosViewModel", "Error loading habitos: ${e.message}", e)
+                }
+                .collect { list ->
+                    _habitos.value = list
+                }
+        }
+    }
+
+    /**Guardar un nuevo hábito*/
+    fun saveHabito(habito: Habito) {
+        viewModelScope.launch {
+            try {
+                habitosRepository.insertHabito(habito)
+                Log.d("HabitosViewModel", "Habito saved successfully")
+            } catch (e: Exception) {
+                Log.e("HabitosViewModel", "Error saving habito: ${e.message}", e)
+            }
+        }
+    }
+
+    /**Actualizar el estado de un hábito*/
+    fun updateEstado(id: Int, estado: Boolean) {
+        viewModelScope.launch {
+            try {
+                habitosRepository.updateEstado(id, estado)
+                Log.d("HabitosViewModel", "Habito estado updated successfully")
+            } catch (e: Exception) {
+                Log.e("HabitosViewModel", "Error updating habito estado: ${e.message}", e)
+            }
+        }
+    }
+
+    /**Actualizar un hábito completo*/
+    fun updateHabito(habito: Habito) {
+        viewModelScope.launch {
+            try {
+                habitosRepository.updateHabito(habito)
+                Log.d("HabitosViewModel", "Habito updated successfully")
+            } catch (e: Exception) {
+                Log.e("HabitosViewModel", "Error updating habito: ${e.message}", e)
+            }
+        }
+    }
+
+    /**Eliminar un hábito*/
+    fun deleteHabito(habito: Habito) {
+        viewModelScope.launch {
+            try {
+                habitosRepository.deleteHabito(habito)
+                Log.d("HabitosViewModel", "Habito deleted successfully")
+            } catch (e: Exception) {
+                Log.e("HabitosViewModel", "Error deleting habito: ${e.message}", e)
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ import edu.josakapp.proyectoJosakapp.data.model.User
 @Database(
     entities = [Habito::class, User::class],
     version = 1,
-    exportSchema = true // Importante para migraciones
+    exportSchema = false // Importante para migraciones
 )
 
 abstract class AppDatabase: RoomDatabase() {
