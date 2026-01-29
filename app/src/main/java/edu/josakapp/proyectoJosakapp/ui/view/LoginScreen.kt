@@ -72,3 +72,8 @@ fun HomeScreen(name: String,
     }
 }
 
+
+/* TextButton(onClick = { navController.navigate("forgot_password") }) {
+    Text("¿Olvidaste tu contraseña?")
+}
+*/
