@@ -2,10 +2,12 @@ package edu.josakapp.proyectoJosakapp.data.repository
 
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.data.network.AuthService
 
 class UserRepository(
     private val local: LocalDatasource,
     // private val remote: RemoteDataSource
+    private val authService: AuthService
 ) {
 
     // Obtener usuarios con sus hábitos
@@ -16,6 +18,12 @@ class UserRepository(
 
     // Insertar o actualizar usuario
     suspend fun insertUser(user: User) = local.insertUser(user)
+
+    fun isUserLogged(): Boolean {
+        return authService.getCurrentUser() != null
+    }
+
+
 
     // Para cuando tengamos RemoteDataSource:
     // suspend fun syncUser(id: Int) = remote.syncUser(id)

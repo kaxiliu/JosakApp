@@ -115,7 +115,7 @@ fun MainContainerScreen() {
 
 
             composable(NavScreens.NavRankingScreen.ruta) {
-                RankingScreen()
+             //   RankingScreen()
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
