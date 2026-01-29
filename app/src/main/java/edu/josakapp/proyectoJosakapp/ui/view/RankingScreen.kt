@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.UserRanking
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
@@ -66,7 +67,10 @@ fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(ranking) { user ->
-                    RankingItem(user)
+                    RankingItem(
+                        user,
+                        position = ranking.indexOf(user) + 1
+                    )
                 }
             }
         }
@@ -74,23 +78,66 @@ fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
 }
 
 @Composable
-fun RankingItem(user: UserRanking) {
+fun RankingItem(user: UserRanking, position: Int) {
+
+    // Colores según posición
+    val backgroundColor = when (position) {
+        1 -> Color(0xFFFFD700).copy(alpha = 0.85f) // Oro
+        2 -> Color(0xFFC0C0C0).copy(alpha = 0.85f) // Plata
+        3 -> Color(0xFFCD7F32).copy(alpha = 0.85f) // Bronce
+        else -> Color.White.copy(alpha = 0.9f)
+    }
+
+    // Medallas
+    val medalla = when (position) {
+        1 -> "🥇"
+        2 -> "🥈"
+        3 -> "🥉"
+        else -> "$position."
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.9f)
+            containerColor = backgroundColor
         )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            // MEDALLA O NÚMERO
             Text(
-                text = "${user.nombre_usuario} - ${user.puntos} pts - Nivel ${user.nivel}",
-                color = Color.Black
+                text = medalla,
+                color = Color.Black,
+                modifier = Modifier.padding(end = 12.dp)
             )
+
+            // FOTO DE PERFIL
+            Image(
+                painter = rememberAsyncImagePainter(user.fotoPerfil),
+                contentDescription = "Foto perfil",
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(end = 12.dp)
+            )
+
+            // NOMBRE + PUNTOS + NIVEL
+            Column {
+                Text(
+                    text = user.nombre_usuario,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "${user.puntos} pts · Nivel ${user.nivel}",
+                    color = Color.DarkGray,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }

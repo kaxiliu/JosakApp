@@ -17,7 +17,9 @@ class RankingViewModel(
 
     fun loadRanking() {
         viewModelScope.launch {
-            _ranking.value = repository.getRanking()
+            val lista = repository.getRanking()
+            _ranking.value = lista.sortedByDescending { it.puntos }
         }
     }
+
 }
