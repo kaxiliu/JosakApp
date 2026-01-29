@@ -1,14 +1,18 @@
 package edu.josakapp.proyectoJosakapp.data.local
 
-import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class LocalDatasource(
     private val userDao: UserDao,
-    private val habitosDao: HabitosDao,
-    private val amigosDao: AmigosDao
+    private val habitosDao: HabitosDao
 ) {
+
+    val currenthabitos: Flow<List<Habito>> = habitosDao.getAllHabitos()
 
     // -------------------------
     // USER DAO
@@ -27,23 +31,21 @@ class LocalDatasource(
 
     fun getAllHabitos() = habitosDao.getAllHabitos()
 
-    fun getUsersWithHabitosFlow() = habitosDao.getUsersWithHabitos()
-
-    fun getHabitoById(id: Int) = habitosDao.getHabitoById(id)
+    suspend fun getHabitoById(id: Int): Habito? = habitosDao.getHabitoById(id)
 
     fun getHabitosByUserId(userId: Int) = habitosDao.getHabitosByUserId(userId)
 
-    suspend fun insertHabito(habito: Habito) = habitosDao.insertHabito(habito)
+    suspend fun insertHabito(habito: Habito): Long {
+        return habitosDao.insertHabito(habito)
+    }
 
     suspend fun deleteHabito(habito: Habito) = habitosDao.deleteHabito(habito)
 
+    suspend fun updateEstado(id: Int, estado: Boolean) {
+        habitosDao.updateEstado(id, estado)
+    }
 
-    // -------------------------
-    // AMIGOS DAO
-    // -------------------------
-
-    fun getAmigos() = amigosDao.getAmigos()
-
-    suspend fun insertAmigo(nombre: String) =
-        amigosDao.insertAmigo(Amigo(nombre))
+    suspend fun updateHabito(habito: Habito): Int {
+        return habitosDao.updateHabito(habito)
+    }
 }

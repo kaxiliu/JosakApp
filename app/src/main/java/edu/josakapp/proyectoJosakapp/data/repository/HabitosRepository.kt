@@ -1,28 +1,17 @@
 package edu.josakapp.proyectoJosakapp.data.repository
 
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
-//import edu.josakapp.proyectoJosakapp.data.remote.RemoteDataSource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 
-class HabitosRepository(
-    private val local: LocalDatasource,
-    // private val remote: RemoteDataSource
-) {
+class HabitosRepository(private val local: LocalDatasource) {
 
-    // Obtener todos los hábitos
-    fun getAllHabitos() = local.getAllHabitos()
+    fun getHabitosByUserId(userId: Int) = local.getHabitosByUserId(userId)
 
-    // Obtener un hábito por ID
-    fun getHabitoById(id: Int) = local.getHabitoById(id)
-
-    fun getHabitosByUserId(id: Int) = local.getHabitosByUserId(id)
-
-    // Insertar o actualizar un hábito
     suspend fun insertHabito(habito: Habito) = local.insertHabito(habito)
 
-    // Eliminar un hábito
-    suspend fun deleteHabito(habito: Habito) = local.deleteHabito(habito)
+    suspend fun updateHabito(habito: Habito) = local.updateHabito(habito)
 
-    // Para cuando tengamos RemoteDataSource:
-    // suspend fun syncHabitos(userId: Int) = remote.syncHabitos(userId)
+    suspend fun updateEstado(id: Int, estado: Boolean) = local.updateEstado(id, estado)
+
+    suspend fun deleteHabito(habito: Habito) = local.deleteHabito(habito)
 }

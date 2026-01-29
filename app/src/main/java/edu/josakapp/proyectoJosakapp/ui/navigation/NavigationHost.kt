@@ -10,51 +10,56 @@ import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
+import edu.josakapp.proyectoJosakapp.ui.view.RankingScreen
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
-
 
 @Composable
 fun NavigationHost(navController: NavHostController) {
-
     val vm: HabitosViewModel = viewModel()
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
         startDestination = NavScreens.NavMainScreen.ruta
     ) {
 
-        // LOGIN
+        /** HOME */
         composable(NavScreens.NavMainScreen.ruta) {
             HomeScreen(
-                name = vm.name,
-                onNameChange = vm::updateName,
-                onGoSecondScreen = {
-                    navController.navigate(NavScreens.NavMainContainerScreen.ruta) {
-                        popUpTo(NavScreens.NavMainScreen.ruta) { inclusive = true }
-                    }
+                onGoSecondScreen = { navController.navigate(NavScreens.NavSecondScreen.ruta) },
+                onGoRegisterScreen = { navController.navigate(NavScreens.NavRegisterScreen.ruta) },
+                onGoForgotPasswordScreen = { navController.navigate(NavScreens.NavForgotPasswordScreen.ruta) }
+            )
+        }
+
+        /** REGISTER */
+        composable(NavScreens.NavRegisterScreen.ruta) {
+            RegisterScreen(
+                onRegister = { name, email, password ->
+                    // Aquí pondrás la lógica de registro
                 },
-                onGoRegisterScreen = {
-                    navController.navigate(NavScreens.NavRegisterScreen.ruta)
-                },
-                onGoForgotPasswordScreen = {
-                    navController.navigate(NavScreens.NavForgotPasswordScreen.ruta)
+                onGoLogin = {
+                    navController.popBackStack()
                 }
             )
         }
 
-        // REGISTER
-        composable(NavScreens.NavRegisterScreen.ruta) {
-            RegisterScreen()
-        }
 
-        // FORGOT PASSWORD
+        /** FORGOT PASSWORD */
         composable(NavScreens.NavForgotPasswordScreen.ruta) {
-            ForgotPasswordScreen()
+            ForgotPasswordScreen { email ->
+                // Aquí pondrás la lógica de recuperación de contraseña
+            }
         }
 
-        // MAIN CONTAINER (Bottom Navigation)
-        composable(NavScreens.NavMainContainerScreen.ruta) {
+        /** MAIN CONTAINER */
+        composable(NavScreens.NavSecondScreen.ruta) {
             MainContainerScreen()
+        }
+
+        /** RANKING */
+        composable(NavScreens.NavRankingScreen.ruta) {
+            RankingScreen()
         }
     }
 }

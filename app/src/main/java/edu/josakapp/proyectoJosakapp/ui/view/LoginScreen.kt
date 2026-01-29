@@ -31,24 +31,28 @@ import edu.josakapp.proyectoJosakapp.ui.components.cuerpoHome
 /**Ver parametros de name y pass*/
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomeScreen(
-    name: String,
-    onNameChange: (String) -> Unit,
-    onGoSecondScreen: () -> Unit,
-    onGoRegisterScreen: () -> Unit,
-    onGoForgotPasswordScreen: () -> Unit
-) {
-    var pass by remember { mutableStateOf("") }
-
-    Card(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-
+fun HomeScreen(name: String,
+               onNameChange: (String) -> Unit,
+               onGoSecondScreen: () -> Unit,
+               onGoRegisterScreen: () -> Unit,
+               onGoForgotPasswordScreen: () -> Unit){
+    var name by remember {mutableStateOf("")}
+    var pass by remember {mutableStateOf("")}
+    Card (
+        modifier = Modifier.fillMaxSize()
+    ){
+        /**Agregamos Box, para que supersponga el fondo*/
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            /**Agregamos la imagen*/
             Image(
                 painter = painterResource(id = R.drawable.fondo_claro),
                 contentDescription = "Fondo",
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.Crop
             )
+           // encabezadoHome()
 
             Box(
                 modifier = Modifier
@@ -59,22 +63,14 @@ fun HomeScreen(
                         shape = RoundedCornerShape(28.dp)
                     )
                     .border(1.dp, Color.White.copy(0.3f), RoundedCornerShape(28.dp))
-            ) {
-                cuerpoHome(
-                    name = name,
-                    pass = pass,
-                    onNameChange = onNameChange,
-                    onPassChange = { pass = it },
-                    onGoSecondScreen = onGoSecondScreen,
-                    onGoRegisterScreen = onGoRegisterScreen,
-                    onGoForgotPasswordScreen = onGoForgotPasswordScreen
-                )
+            ){
+                cuerpoHome(onGoSecondScreen,
+                    onGoRegisterScreen, onGoForgotPasswordScreen)
+
             }
         }
     }
 }
-
-
 
 
 /* TextButton(onClick = { navController.navigate("forgot_password") }) {
