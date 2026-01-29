@@ -1,15 +1,14 @@
 package edu.josakapp.proyectoJosakapp.data.local
 
+import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.User
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class LocalDatasource(
     private val userDao: UserDao,
-    private val habitosDao: HabitosDao
+    private val habitosDao: HabitosDao,
+    private val amigosDao: AmigosDao   // ✅ AÑADIDO
 ) {
 
     val currenthabitos: Flow<List<Habito>> = habitosDao.getAllHabitos()
@@ -48,4 +47,14 @@ class LocalDatasource(
     suspend fun updateHabito(habito: Habito): Int {
         return habitosDao.updateHabito(habito)
     }
+
+
+    // -------------------------
+    // AMIGOS DAO  ✅ NUEVO
+    // -------------------------
+
+    fun getAmigos() = amigosDao.getAmigos()
+
+    suspend fun insertAmigo(nombre: String) =
+        amigosDao.insertAmigo(Amigo(nombre))
 }

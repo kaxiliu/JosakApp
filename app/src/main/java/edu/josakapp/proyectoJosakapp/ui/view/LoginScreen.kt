@@ -31,28 +31,25 @@ import edu.josakapp.proyectoJosakapp.ui.components.cuerpoHome
 /**Ver parametros de name y pass*/
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomeScreen(name: String,
-               onNameChange: (String) -> Unit,
-               onGoSecondScreen: () -> Unit,
-               onGoRegisterScreen: () -> Unit,
-               onGoForgotPasswordScreen: () -> Unit){
-    var name by remember {mutableStateOf("")}
-    var pass by remember {mutableStateOf("")}
-    Card (
+fun HomeScreen(
+    onGoSecondScreen: () -> Unit,
+    onGoRegisterScreen: () -> Unit,
+    onGoForgotPasswordScreen: () -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var pass by remember { mutableStateOf("") }
+    Card(
         modifier = Modifier.fillMaxSize()
-    ){
-        /**Agregamos Box, para que supersponga el fondo*/
+    ) {
         Box(
             modifier = Modifier.fillMaxSize()
-        ){
-            /**Agregamos la imagen*/
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.fondo_claro),
                 contentDescription = "Fondo",
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.Crop
             )
-           // encabezadoHome()
 
             Box(
                 modifier = Modifier
@@ -63,10 +60,16 @@ fun HomeScreen(name: String,
                         shape = RoundedCornerShape(28.dp)
                     )
                     .border(1.dp, Color.White.copy(0.3f), RoundedCornerShape(28.dp))
-            ){
-                cuerpoHome(onGoSecondScreen,
-                    onGoRegisterScreen, onGoForgotPasswordScreen)
-
+            ) {
+                cuerpoHome(
+                    name = name,
+                    pass = pass,
+                    onNameChange = { name = it },
+                    onPassChange = { pass = it },
+                    onGoSecondScreen = onGoSecondScreen,
+                    onGoRegisterScreen = onGoRegisterScreen,
+                    onGoForgotPasswordScreen = onGoForgotPasswordScreen
+                )
             }
         }
     }

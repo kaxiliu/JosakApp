@@ -23,7 +23,7 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         val database = AppDatabase.getInstance(application)
-        val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO())
+        val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO(), database.amigosDAO())
         habitosRepository = HabitosRepository(localDatasource)
     }
 
