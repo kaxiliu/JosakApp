@@ -2,9 +2,10 @@ package edu.josakapp.proyectoJosakapp.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,11 +18,14 @@ import coil.compose.rememberAsyncImagePainter
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.UserRanking
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 
 @Composable
 fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
 
     val ranking by viewModel.ranking.collectAsState()
+    val soloAmigos by viewModel.soloAmigos.collectAsState()
 
     // Cargar ranking al entrar
     LaunchedEffect(Unit) {
@@ -60,16 +64,30 @@ fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
                 color = Color.White
             )
 
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Toggle Global / Amigos
+            Text(
+                text = if (soloAmigos) "Ver ranking global" else "Ver ranking de amigos",
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable { viewModel.toggleRanking() }
+                    .padding(8.dp)
+            )
+
             Spacer(modifier = Modifier.height(20.dp))
 
             // Lista del ranking
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(ranking) { user ->
+                itemsIndexed(ranking) { index, user ->
                     RankingItem(
-                        user,
-                        position = ranking.indexOf(user) + 1
+                        user = user,
+                        position = index + 1,
+                        onAddFriend = { viewModel.addFriend(user.nombre_usuario) }
                     )
                 }
             }
@@ -78,7 +96,7 @@ fun RankingScreen(viewModel: RankingViewModel = RankingViewModel()) {
 }
 
 @Composable
-fun RankingItem(user: UserRanking, position: Int) {
+fun RankingItem(user: UserRanking, position: Int, onAddFriend: () -> Unit) {
 
     // Colores según posición
     val backgroundColor = when (position) {
@@ -105,7 +123,9 @@ fun RankingItem(user: UserRanking, position: Int) {
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -126,7 +146,9 @@ fun RankingItem(user: UserRanking, position: Int) {
             )
 
             // NOMBRE + PUNTOS + NIVEL
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = user.nombre_usuario,
                     color = Color.Black,
@@ -136,6 +158,17 @@ fun RankingItem(user: UserRanking, position: Int) {
                     text = "${user.puntos} pts · Nivel ${user.nivel}",
                     color = Color.DarkGray,
                     style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            // BOTÓN AÑADIR AMIGO
+            IconButton(
+                onClick = onAddFriend
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Añadir amigo",
+                    tint = Color.Black
                 )
             }
         }
