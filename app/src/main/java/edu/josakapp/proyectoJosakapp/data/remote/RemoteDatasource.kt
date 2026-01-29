@@ -1,5 +1,6 @@
 package edu.josakapp.proyectoJosakapp.data.remote
 
+/*
 class RemoteDatasource (
         private val api: RankingApi
     ) {
@@ -9,3 +10,4 @@ class RemoteDatasource (
     }
 
 }
+*/
