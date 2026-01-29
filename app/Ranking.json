@@ -16,6 +16,13 @@
     "puntos": 1000,
     "nivel": 3,
     "fotoPerfil": "https://example.com/foto3.png"
+  },
+  {
+    "nombre_usuario": "Begoña",
+    "puntos": 2000,
+    "nivel": 10,
+    "fotoPerfil": "https://example.com/foto4.png"
   }
+  
 ]
 
