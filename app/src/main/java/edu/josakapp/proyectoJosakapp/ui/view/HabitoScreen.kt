@@ -37,6 +37,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +56,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,22 +76,27 @@ import edu.josakapp.proyectoJosakapp.ui.components.AnyadirHabito
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoCard
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
+    var showDeleteDialog by remember { mutableStateOf(false) }//Borrar el habito
     val listaHabitos by viewModel.habitos.collectAsState()
     // Nuevo estado para rastrear qué hábito estamos editando
     var habitoSeleccionado by remember { mutableStateOf<Habito?>(null) }
 
+    //deshacer el borrar
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(userId) {
         viewModel.loadHabitos(userId)
     }
 
-    Scaffold(
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = { TopAppBar(title = {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp),
@@ -96,22 +106,26 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                         IconButton(onClick = { /* Menu */ }) {
                             Icon(Icons.Default.Menu,
                                 "Menu",
-                                tint = Color.White)
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp))
                         }
                         IconButton(onClick = { showDialog = true }) {
                             Icon(Icons.Default.Add,
                                 "Add",
-                                tint = Color.White)
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp))
                         }
                         IconButton(onClick = { /* Stats */ }) {
                             Icon(ImageVector.vectorResource(id = R.drawable.fire),
                                 "Streak",
-                                tint = Color.White)
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp))
                         }
                         IconButton(onClick = { /* Money */ }) {
                             Icon(ImageVector.vectorResource(id = R.drawable.money),
                                 "Money",
-                                tint = Color.White)
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp))
                         }
                     }
                 },
@@ -161,7 +175,10 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                                 // Clic en la tarjeta: Prepara el diálogo de edición
                                 habitoSeleccionado = h
                                 showDialog = true},
-                            onLongClick = { /**/}
+                            onLongClick = { h ->
+                                habitoSeleccionado = h
+                                showDeleteDialog = true
+                            }
                         )
                     }
                 }
@@ -182,6 +199,40 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                     else viewModel.updateHabito(h) // Actualizar existente
                     showDialog = false
                     habitoSeleccionado = null
+                }
+            )
+        }
+
+        if (showDeleteDialog && habitoSeleccionado != null) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("¿Eliminar hábito?", fontWeight = FontWeight.Bold) },
+                text = { Text("¿Estás seguro de que quieres eliminar \"${habitoSeleccionado?.nombre}\"? ") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val habitToDelete = habitoSeleccionado!!
+                        viewModel.deleteHabito(habitToDelete)
+                        showDeleteDialog = false
+
+
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Habito eliminado",
+                                actionLabel = "Deshacer",
+                                duration = SnackbarDuration.Short
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.saveHabito(habitToDelete)
+                            }
+                        }
+                    }) {
+                        Text("Eliminar", color = Color.Red)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancelar")
+                    }
                 }
             )
         }

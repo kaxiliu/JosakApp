@@ -2,6 +2,7 @@ package edu.josakapp.proyectoJosakapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,6 +63,9 @@ fun AnyadirHabito(
         else Color(0xFFE8F5E9))
     }
     var selectedIcon by remember { mutableStateOf(habitoInicial?.icono ?: "📚") }
+    val scrollState = rememberScrollState()
+    val listaIconos = listOf("💧", "🏃", "📚", "🍎", "🧘", "🎸", "🧹", "💊", "💻", "🛌", "🌱", "🍳")
+
     val options = listOf("Todos los días", "Todas las semanas", "Todos los meses")
     var expanded by remember { mutableStateOf(false) }
     // Cargamos la frecuencia guardada o la primera por defecto
@@ -179,15 +184,27 @@ fun AnyadirHabito(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(text = "Icono", fontSize = 14.sp, color = Color.Gray)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(8.dp)) {
-                        listOf("💧", "🏃", "📚", "🍎").forEach { icon ->
-                            Box(modifier = Modifier
-                                .size(40.dp)
-                                .background(if (selectedIcon == icon) Color(0xFF64B5F6) else Color.LightGray, CircleShape)
-                                .clickable { selectedIcon = icon },
+                    // Añadimos horizontalScroll(scrollState) para permitir el deslizamiento
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .horizontalScroll(scrollState), // Habilita el scroll
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        listaIconos.forEach { icon ->
+                            Box(
+                                modifier = Modifier
+                                    .size(45.dp) // Un poco más grande para facilitar el toque
+                                    .background(
+                                        if (selectedIcon == icon) Color(0xFF64B5F6)
+                                        else Color.LightGray.copy(alpha = 0.3f),
+                                        CircleShape
+                                    )
+                                    .clickable { selectedIcon = icon },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(icon, fontSize = 20.sp)
+                                Text(icon, fontSize = 22.sp)
                             }
                         }
                     }
