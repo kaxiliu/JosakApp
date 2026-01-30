@@ -36,7 +36,8 @@ import edu.josakapp.proyectoJosakapp.data.model.Habito
 fun HabitoCard(
     habito: Habito,
     onClick: (Habito) -> Unit = {}, //Estado
-    onLongClick: (Habito) -> Unit = {} //Modificar
+    onEdit: (Habito) -> Unit,//Editar
+    onLongClick: (Habito) -> Unit = {} //Borrar
 ) {
 
     // Muestra la información
@@ -44,8 +45,8 @@ fun HabitoCard(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = { onClick(habito) },
-                onLongClick = { onLongClick(habito) }
+                onClick = { onEdit(habito) },// El clic en la tarjeta para editar
+                onLongClick = { onLongClick(habito) }// El clic largo ahora es para borrar
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),

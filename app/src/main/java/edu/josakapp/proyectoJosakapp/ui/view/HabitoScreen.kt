@@ -78,6 +78,8 @@ import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
     val listaHabitos by viewModel.habitos.collectAsState()
+    // Nuevo estado para rastrear qué hábito estamos editando
+    var habitoSeleccionado by remember { mutableStateOf<Habito?>(null) }
 
 
     LaunchedEffect(userId) {
@@ -155,6 +157,10 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                             onClick = {
                                 viewModel.updateEstado(habit.id_habito, !habit.estado)
                             },
+                            onEdit = {h ->
+                                // Clic en la tarjeta: Prepara el diálogo de edición
+                                habitoSeleccionado = h
+                                showDialog = true},
                             onLongClick = { /**/}
                         )
                     }
@@ -166,10 +172,16 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
         if (showDialog) {
             AnyadirHabito(
                 userId = userId,
-                onDismiss = { showDialog = false },
-                onConfirm = { nuevoHabito ->
-                    viewModel.saveHabito(nuevoHabito)
+                habitoInicial = habitoSeleccionado,
+                onDismiss = {
                     showDialog = false
+                    habitoSeleccionado = null
+                },
+                onConfirm = { h ->
+                    if (habitoSeleccionado == null) viewModel.saveHabito(h)
+                    else viewModel.updateHabito(h) // Actualizar existente
+                    showDialog = false
+                    habitoSeleccionado = null
                 }
             )
         }

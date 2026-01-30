@@ -47,16 +47,24 @@ import edu.josakapp.proyectoJosakapp.data.model.Habito
 @Composable
 fun AnyadirHabito(
     userId: Int,
+    habitoInicial: Habito? = null,// Parámetro nuevo para edición
     onDismiss: () -> Unit,
     onConfirm: (Habito) -> Unit
 ) {
-    var habitName by remember { mutableStateOf("") }
-    var habitDescription by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(Color(0xFFE8F5E9)) }
-    var selectedIcon by remember { mutableStateOf("📚") }
+    // Inicializar estados con los valores del hábito si existe
+    var habitName by remember { mutableStateOf(habitoInicial?.nombre ?: "") }
+    var habitDescription by remember { mutableStateOf(habitoInicial?.descripcion ?: "") }
+
+    // Para el color, convertimos el Long guardado de vuelta a un objeto Color
+    var selectedColor by remember {
+        mutableStateOf(if (habitoInicial != null) Color(habitoInicial.colorHex)
+        else Color(0xFFE8F5E9))
+    }
+    var selectedIcon by remember { mutableStateOf(habitoInicial?.icono ?: "📚") }
     val options = listOf("Todos los días", "Todas las semanas", "Todos los meses")
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options[0]) }
+    // Cargamos la frecuencia guardada o la primera por defecto
+    var selectedOption by remember { mutableStateOf(habitoInicial?.frecuencia ?: options[0]) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -75,27 +83,47 @@ fun AnyadirHabito(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Añadir un hábito", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                    // Cambia el título según el modo
+                    Text(
+                        text = if (habitoInicial == null) "Añadir un hábito" else "Editar hábito",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                     Row {
                         IconButton(onClick = {
                             if (habitName.isNotBlank()) {
-                                val newHabito = Habito(
-                                    nombre = habitName,
-                                    descripcion = habitDescription,
-                                    exp_habito = 0,
-                                    frecuencia = selectedOption,
-                                    estado = false,
-                                    fecha_creacion = System.currentTimeMillis(),
-                                    icono = selectedIcon,
-                                    id_usuario = userId,
-                                    colorHex = when(selectedColor) {
-                                        Color(0xFFFFCDD2) -> 0xFFFFCDD2
-                                        Color(0xFFBBDEFB) -> 0xFFBBDEFB
-                                        Color(0xFFFFF9C4) -> 0xFFFFF9C4
-                                        else -> 0xFFE8F5E9
-                                    }
-                                )
-                                onConfirm(newHabito)
+
+                                val colorVal = when(selectedColor) {
+                                    Color(0xFFFFCDD2) -> 0xFFFFCDD2
+                                    Color(0xFFBBDEFB) -> 0xFFBBDEFB
+                                    Color(0xFFFFF9C4) -> 0xFFFFF9C4
+                                    else -> 0xFFE8F5E9
+                                }
+
+                                // Crear o copiar el hábito preservando el ID si es edición
+                                val habitoFinal = if (habitoInicial == null) {
+                                    Habito(
+                                        nombre = habitName,
+                                        descripcion = habitDescription,
+                                        exp_habito = 0,
+                                        frecuencia = selectedOption,
+                                        estado = false,
+                                        fecha_creacion = System.currentTimeMillis(),
+                                        icono = selectedIcon,
+                                        id_usuario = userId,
+                                        colorHex=colorVal
+                                    )
+                                }else{
+                                    habitoInicial.copy(
+                                        nombre = habitName,
+                                        descripcion = habitDescription,
+                                        frecuencia = selectedOption,
+                                        icono = selectedIcon,
+                                        colorHex = colorVal
+                                        // No tocamos id_habito, estado ni exp_habito para no perder el progreso
+                                    )
+                                }
+                                onConfirm(habitoFinal)
                             }
                         }) {
                             Icon(Icons.Default.Check, contentDescription = "Confirmar")
