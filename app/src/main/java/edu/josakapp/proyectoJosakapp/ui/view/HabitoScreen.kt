@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.ui.components.AnyadirHabito
@@ -83,7 +84,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
+fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHostController) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
     var showDeleteDialog by remember { mutableStateOf(false) }//Borrar el habito
     val listaHabitos by viewModel.habitos.collectAsState()
@@ -157,7 +158,8 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp))
                         }
-                        IconButton(onClick = { /* Stats */ }) {
+                        IconButton(onClick = { navController.navigate("stats")
+                        }) {
                             Icon(ImageVector.vectorResource(id = R.drawable.fire),
                                 "Streak",
                                 tint = Color.White,
