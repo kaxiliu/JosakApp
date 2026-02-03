@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -74,6 +75,7 @@ import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.ui.components.AnyadirHabito
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
+import edu.josakapp.proyectoJosakapp.ui.components.DraggablePenguin
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoCard
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import kotlinx.coroutines.launch
@@ -85,6 +87,8 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
     var showDeleteDialog by remember { mutableStateOf(false) }//Borrar el habito
     val listaHabitos by viewModel.habitos.collectAsState()
+    val registros by viewModel.todosLosRegistros.collectAsState()
+
     // Nuevo estado para rastrear qué hábito estamos editando
     var habitoSeleccionado by remember { mutableStateOf<Habito?>(null) }
 
@@ -92,22 +96,60 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // Controla si el menú está abierto o cerrado
+    var menuExpanded by remember { mutableStateOf(false) }
+    // Controla si el pingüino es visible o no
+    var showPenguin by remember { mutableStateOf(false) }
+
     LaunchedEffect(userId) {
         viewModel.loadHabitos(userId)
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) },
+    Box(modifier = Modifier.fillMaxSize()) {
+        //Imagen de fondo que cubre TODA la pantalla
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Capa de oscurecimiento
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)))
+
+    Scaffold(containerColor = Color.Transparent,
+             snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = { TopAppBar(title = {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(onClick = { /* Menu */ }) {
-                            Icon(Icons.Default.Menu,
-                                "Menu",
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp))
+                        Box {
+                            IconButton(onClick = { menuExpanded = true }) {
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Menu",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(25.dp)
+                                )
+                            }
+
+                            // El menú desplegable
+                            DropdownMenu(
+                                expanded = menuExpanded,
+                                onDismissRequest = { menuExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(if (showPenguin) "Ocultar pingüino" else "Mostrar pingüino")
+                                    },
+                                    onClick = {
+                                        showPenguin = !showPenguin // Cambia el estado
+                                        menuExpanded = false // Cierra el menú
+                                    }
+                                )
+                            }
                         }
                         IconButton(onClick = { showDialog = true }) {
                             Icon(Icons.Default.Add,
@@ -138,24 +180,13 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
         },
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = "background",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)))
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
 
-                CalendarCard(habitos = listaHabitos)
+                CalendarCard(registros = registros)
 
                 Spacer(modifier = Modifier.height(5.dp))
 
@@ -169,7 +200,8 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                         HabitoCard(
                             habito = habit,
                             onClick = {
-                                viewModel.updateEstado(habit.id_habito, !habit.estado)
+                                //viewModel.updateEstado(habit.id_habito, !habit.estado)
+                                viewModel.toggleHabito(habit)
                             },
                             onEdit = {h ->
                                 // Clic en la tarjeta: Prepara el diálogo de edición
@@ -184,7 +216,13 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int) {
                 }
             }
         }
-
+        if (showPenguin) {
+            DraggablePenguin(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 50.dp, end = 10.dp)
+            )
+        }
 
         if (showDialog) {
             AnyadirHabito(

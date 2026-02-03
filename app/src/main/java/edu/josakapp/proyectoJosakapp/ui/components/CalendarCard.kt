@@ -20,15 +20,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import edu.josakapp.proyectoJosakapp.data.model.Calendar
-import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 @Composable
-fun CalendarCard(habitos: List<Habito>) {
+fun CalendarCard(registros: List<HabitoRegistro>) {
     // Obtener la fecha actual del sistema
     val today = LocalDate.now()
 
@@ -38,17 +39,16 @@ fun CalendarCard(habitos: List<Habito>) {
     // Generar los datos de los 7 días de la semana actual
     val days = (0..6).map { i ->
         val date = monday.plusDays(i.toLong())
-        val isToday = date == today
+        val dateMillis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-        // Lógica: Verificar si algún hábito ha sido marcado como cumplido (estado = true)
-        // Se puede filtrar por fecha si el modelo de datos lo permite en el futuro
-        val anyHabitDone = habitos.any { it.estado }
+        val hasRecord = registros.any { it.fecha == dateMillis }
+
 
         Calendar(
             day = date.dayOfMonth,
             dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("es")).uppercase(),
             // El color cambia si es el día actual y hay tareas completadas
-            isDone = anyHabitDone && isToday
+            isDone = hasRecord
         )
     }
 
@@ -84,7 +84,8 @@ fun DayItem(day: Calendar) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = day.dayName )
+                Text(text = day.dayName,
+                    color = if (day.isDone) Color.White else Color.Black)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "${day.day}",

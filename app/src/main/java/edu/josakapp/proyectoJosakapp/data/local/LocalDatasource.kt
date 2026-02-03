@@ -2,6 +2,7 @@ package edu.josakapp.proyectoJosakapp.data.local
 
 import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.model.User
 import kotlinx.coroutines.flow.Flow
 
@@ -47,6 +48,13 @@ class LocalDatasource(
     suspend fun updateHabito(habito: Habito): Int {
         return habitosDao.updateHabito(habito)
     }
+
+    fun getAllRegistros() = habitosDao.getAllRegistros()
+
+    suspend fun insertRegistro(registro: HabitoRegistro) = habitosDao.insertRegistro(registro)
+
+    suspend fun deleteRegistro(idHabito: Int, fecha: Long) = habitosDao.deleteRegistro(idHabito, fecha)
+
 
 
     // -------------------------

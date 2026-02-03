@@ -9,15 +9,17 @@ import edu.josakapp.proyectoJosakapp.data.local.HabitosDao
 import edu.josakapp.proyectoJosakapp.data.local.UserDao
 import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.model.User
 
 @Database(
     entities = [
         Habito::class,
         User::class,
-        Amigo::class   // ← NUEVA TABLA
+        Amigo::class,   // ← NUEVA TABLA
+        HabitoRegistro::class
     ],
-    version = 2,        // ← IMPORTANTE: subir versión
+    version = 3,        // ← IMPORTANTE: subir versión
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

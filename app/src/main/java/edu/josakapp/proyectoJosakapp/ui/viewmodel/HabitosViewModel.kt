@@ -4,27 +4,43 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 
 class HabitosViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _habitos = MutableStateFlow<List<Habito>>(emptyList())
     val habitos: StateFlow<List<Habito>> = _habitos.asStateFlow()
 
+    private val _registrosHoy = MutableStateFlow<List<HabitoRegistro>>(emptyList())
+    private val _todosLosRegistros = MutableStateFlow<List<HabitoRegistro>>(emptyList())
+    val todosLosRegistros: StateFlow<List<HabitoRegistro>> = _todosLosRegistros.asStateFlow()
     private val habitosRepository: HabitosRepository
 
     init {
         val database = AppDatabase.getInstance(application)
         val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO(), database.amigosDAO())
         habitosRepository = HabitosRepository(localDatasource)
+        cargarTodosLosRegistros()
+    }
+
+    private fun cargarTodosLosRegistros() {
+        viewModelScope.launch {
+            habitosRepository.getAllRegistros().collect { lista ->
+                _todosLosRegistros.value = lista
+            }
+        }
     }
 
     /**Cargar hábitos de un usuario específico*/
@@ -84,6 +100,21 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
                 Log.d("HabitosViewModel", "Habito deleted successfully")
             } catch (e: Exception) {
                 Log.e("HabitosViewModel", "Error deleting habito: ${e.message}", e)
+            }
+        }
+    }
+
+    fun toggleHabito(habito: Habito) {
+        val hoy = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val estaCompletado = _registrosHoy.value.any { it.id_habito == habito.id_habito }
+
+        viewModelScope.launch {
+            if (!habito.estado) {
+                habitosRepository.insertRegistro(HabitoRegistro(habito.id_habito, hoy))
+                updateEstado(habito.id_habito, true)
+            } else {
+                habitosRepository.deleteRegistro(habito.id_habito, hoy)
+                updateEstado(habito.id_habito, false)
             }
         }
     }
