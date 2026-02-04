@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -108,7 +109,14 @@ fun MainContainerScreen() {
 
 
             composable(NavScreens.NavHabitoScreen.ruta) {
-                HabitoScreen(habitosViewModel, userId=0 )//TODO user
+                HabitoScreen(habitosViewModel, userId=0,navController = bottomNavController )//TODO user
+            }
+            composable("stats") {
+                val registros by habitosViewModel.todosLosRegistros.collectAsState()
+                StatsScreen(
+                    navController = bottomNavController,
+                    registros = registros
+                )
             }
 
             composable(NavScreens.NavRankingScreen.ruta) {

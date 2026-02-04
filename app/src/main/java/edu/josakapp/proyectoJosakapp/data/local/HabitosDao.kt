@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import kotlinx.coroutines.flow.Flow
 
 
@@ -42,6 +43,19 @@ interface HabitosDao {
     //Eliminar hábito
     @Delete
     suspend fun deleteHabito(habito: Habito): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRegistro(registro: HabitoRegistro)
+
+    @Query("DELETE FROM habito_registro WHERE id_habito = :idHabito AND fecha = :fecha")
+    suspend fun deleteRegistro(idHabito: Int, fecha: Long)
+
+
+    @Query("SELECT COUNT(*) > 0 FROM habito_registro WHERE id_habito = :idHabito AND fecha = :fecha")
+    fun isHabitoCompletado(idHabito: Int, fecha: Long): Flow<Boolean>
+
+    @Query("SELECT * FROM habito_registro")
+    fun getAllRegistros(): Flow<List<HabitoRegistro>>
 }
 
 

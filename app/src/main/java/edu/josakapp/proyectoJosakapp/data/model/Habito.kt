@@ -18,3 +18,12 @@ data class Habito(
     val id_usuario: Int,
     val colorHex: Long = 0xFFD3D3D3
 )
+@Entity(
+    tableName = "habito_registro",
+    primaryKeys = ["id_habito", "fecha"]
+)
+data class HabitoRegistro(
+    val id_habito: Int,
+    val fecha: Long,
+    val completado: Boolean = true
+)

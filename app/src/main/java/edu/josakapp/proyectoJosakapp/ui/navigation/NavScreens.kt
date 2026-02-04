@@ -10,6 +10,7 @@ sealed class NavScreens(val ruta: String) {
 
     // Bottom Navigation
     object NavHabitoScreen : NavScreens("habito")
+    object NavStatsScreen : NavScreens("stats")
     object NavRankingScreen : NavScreens("ranking")
     object NavTiendaScreen : NavScreens("tienda")
     object NavPinguinoScreen : NavScreens("pinguino")
