@@ -5,14 +5,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
+import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userRepository: UserRepository
+
+    private val _user = MutableStateFlow<List<User>>(emptyList())
+    val user: StateFlow<List<User>> = _user.asStateFlow()
 
     init {
         val database = AppDatabase.getInstance(application)

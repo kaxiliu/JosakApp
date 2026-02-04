@@ -25,14 +25,13 @@ fun DraggablePenguin(modifier: Modifier = Modifier) {
     var offsetY by remember { mutableFloatStateOf(200f) } // Posición inicial Y (opcional)
 
     Image(
-        // ¡REEMPLAZA ESTO CON TU RECURSO DE IMAGEN!
         painter = painterResource(id = R.drawable.pinguino), // Usando un placeholder por ahora
         contentDescription = "Pingüino interactivo",
         modifier = modifier
             .size(230.dp) // Tamaño del pingüino
-            // 1. Aplicar el desplazamiento basado en el estado actual
+            // Aplicar el desplazamiento basado en el estado actual
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-            // 2. Detectar el gesto de arrastre
+            //  Detectar el gesto de arrastre
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume() // Consumir el evento para que no se propague
