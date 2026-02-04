@@ -90,6 +90,11 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHost
     val listaHabitos by viewModel.habitos.collectAsState()
     val registros by viewModel.todosLosRegistros.collectAsState()
 
+    val hoy = java.time.LocalDate.now()
+        .atStartOfDay(java.time.ZoneId.systemDefault())
+        .toInstant()
+        .toEpochMilli()
+
     // Nuevo estado para rastrear qué hábito estamos editando
     var habitoSeleccionado by remember { mutableStateOf<Habito?>(null) }
 
@@ -199,8 +204,9 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHost
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(listaHabitos) { habit ->
+                        val isDoneToday = registros.any { it.id_habito == habit.id_habito && it.fecha == hoy }
                         HabitoCard(
-                            habito = habit,
+                            habito = habit.copy(estado = isDoneToday),
                             onClick = {
                                 //viewModel.updateEstado(habit.id_habito, !habit.estado)
                                 viewModel.toggleHabito(habit)

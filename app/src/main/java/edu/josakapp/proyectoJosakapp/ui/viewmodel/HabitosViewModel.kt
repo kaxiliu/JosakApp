@@ -106,15 +106,17 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
 
     fun toggleHabito(habito: Habito) {
         val hoy = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        val estaCompletado = _registrosHoy.value.any { it.id_habito == habito.id_habito }
+        val estaCompletadoHoy = _todosLosRegistros.value.any {
+            it.id_habito == habito.id_habito && it.fecha == hoy
+        }
 
         viewModelScope.launch {
-            if (!habito.estado) {
+            if (!estaCompletadoHoy) {
                 habitosRepository.insertRegistro(HabitoRegistro(habito.id_habito, hoy))
-                updateEstado(habito.id_habito, true)
+                //updateEstado(habito.id_habito, true)
             } else {
                 habitosRepository.deleteRegistro(habito.id_habito, hoy)
-                updateEstado(habito.id_habito, false)
+                //updateEstado(habito.id_habito, false)
             }
         }
     }
