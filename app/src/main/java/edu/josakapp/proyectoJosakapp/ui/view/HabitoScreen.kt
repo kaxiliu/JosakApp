@@ -170,7 +170,7 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHost
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp))
                         }
-                        IconButton(onClick = { /* Money */ }) {
+                        IconButton(onClick = { navController.navigate("money") }) {
                             Icon(ImageVector.vectorResource(id = R.drawable.money),
                                 "Money",
                                 tint = Color.White,

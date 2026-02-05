@@ -17,6 +17,7 @@ import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 @Composable
 fun MainContainerScreen(user: User) {
@@ -25,6 +26,7 @@ fun MainContainerScreen(user: User) {
 
     val habitosViewModel: HabitosViewModel = viewModel()
     val rankingViewModel: RankingViewModel = viewModel()
+    val userViewModel: UserViewModel=viewModel()
 
     Scaffold(
         bottomBar = {
@@ -119,6 +121,14 @@ fun MainContainerScreen(user: User) {
                 StatsScreen(
                     navController = bottomNavController,
                     registros = registros
+                )
+            }
+
+            composable("money") {
+                val user by userViewModel.user.collectAsState()
+                MoneyScreen(
+                    navController = bottomNavController,
+                    user =user
                 )
             }
 
