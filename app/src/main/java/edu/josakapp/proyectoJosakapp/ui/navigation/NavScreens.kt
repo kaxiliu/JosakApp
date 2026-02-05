@@ -6,7 +6,7 @@ sealed class NavScreens(val ruta: String) {
     object NavRegisterScreen : NavScreens("register")      // Registro
     object NavForgotPasswordScreen : NavScreens("forgot_password")
 
-    object NavSecondScreen : NavScreens("second")          // Contenedor principal
+    object NavSecondScreen : NavScreens("second")          // Contenedor principal (recibirá UID)
 
     // Bottom Navigation
     object NavHabitoScreen : NavScreens("habito")

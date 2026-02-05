@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "945906279402",
+    "project_id": "josakapp-3c8af",
+    "storage_bucket": "josakapp-3c8af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945906279402:android:adb92ca464dd8198eb8893",
+        "android_client_info": {
+          "package_name": "edu.josakapp.proyectoJosakapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945906279402-1bu73u53ljrcbfdjfqrucc764untaj26.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.josakapp.proyectoJosakapp",
+            "certificate_hash": "5ea8086ee472711b318c3c5938dcb4784199c1bd"
+          }
+        },
+        {
+          "client_id": "945906279402-ramqi7jlcunvok6n113gkqk4g5gbl5g1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiPXn5EtjewktztQdvC2rR3F7U9xBlV4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945906279402-ramqi7jlcunvok6n113gkqk4g5gbl5g1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

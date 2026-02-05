@@ -1,31 +1,79 @@
 package edu.josakapp.proyectoJosakapp.data.repository
 
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
-import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.data.model.*
 import edu.josakapp.proyectoJosakapp.data.network.AuthService
+import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
+import edu.josakapp.proyectoJosakapp.data.remote.RetrofitClient
 
 class UserRepository(
     private val local: LocalDatasource,
-    // private val remote: RemoteDataSource
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val remote: UserRemoteRepository
 ) {
 
-    // Obtener usuarios con sus hábitos
-    fun getUsersWithHabitos() = local.getUsersWithHabitos()
+    suspend fun loadUser(uid: String): User {
 
-    // Obtener usuario por ID
-    suspend fun getUserById(id: Int) = local.getUserById(id)
+        // 1. Intentar obtener desde Firestore
+        val remoteUser = remote.getUser(uid)
 
-    // Insertar o actualizar usuario
-    suspend fun insertUser(user: User) = local.insertUser(user)
+        return if (remoteUser != null) {
 
-    fun isUserLogged(): Boolean {
-        return authService.getCurrentUser() != null
+            val localUser = remoteUser.toLocal()
+            local.insertUser(localUser)
+            localUser
+
+        } else {
+
+            // 2. Crear usuario nuevo
+            val newRemote = UserRemote(
+                uid = uid,
+                nombre_usuario = "Nuevo usuario"
+            )
+
+            // Guardar en Firestore
+            remote.saveUser(newRemote)
+
+            // Guardar en Room
+            val localUser = newRemote.toLocal()
+            local.insertUser(localUser)
+
+            localUser
+        }
+    }
+
+    suspend fun createUser(uid: String, name: String, email: String): User {
+        val newUser = User(
+            nombre_usuario = name,
+            email = email,
+            contrasena = "",
+            esPremium = false,
+            monedas = 0,
+            fecha_registro = System.currentTimeMillis(),
+            xp_total = 0,
+            telefono = 0,
+            fotoPerfil = "",
+            nivel = 1,
+            puntos = 0
+        )
+
+        // Guardar en Firestore como UserRemote
+        remote.saveUser(newUser.toRemote(uid))
+
+        // Guardar en Room como User
+        local.insertUser(newUser)
+
+        return newUser
     }
 
 
 
-    // Para cuando tengamos RemoteDataSource:
-    // suspend fun syncUser(id: Int) = remote.syncUser(id)
-    // suspend fun validatePremium(id: Int) = remote.validatePremium(id)
+
+    fun isUserLogged(): Boolean = authService.getCurrentUser() != null
+
+    fun getUsersWithHabitos() = local.getUsersWithHabitos()
+
+    suspend fun getUserById(id: Int) = local.getUserById(id)
+
+    suspend fun insertUser(user: User) = local.insertUser(user)
 }

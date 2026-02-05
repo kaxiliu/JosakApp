@@ -13,17 +13,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 @Composable
-fun MainContainerScreen() {
+fun MainContainerScreen(user: User) {
 
     val bottomNavController = rememberNavController()
 
-    // ViewModels compartidos dentro del contenedor
     val habitosViewModel: HabitosViewModel = viewModel()
     val rankingViewModel: RankingViewModel = viewModel()
     val userViewModel: UserViewModel=viewModel()
@@ -108,10 +108,14 @@ fun MainContainerScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
 
-
             composable(NavScreens.NavHabitoScreen.ruta) {
-                HabitoScreen(habitosViewModel, userId=0,navController = bottomNavController )//TODO user
+                HabitoScreen(
+                    habitosViewModel,
+                    userId = user.id_usuario,   // ← ahora sí
+                    navController = bottomNavController
+                )
             }
+
             composable("stats") {
                 val registros by habitosViewModel.todosLosRegistros.collectAsState()
                 StatsScreen(

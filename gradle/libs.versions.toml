@@ -13,8 +13,6 @@ playServicesGames = "24.0.0"
 firebaseBom = "33.1.1"
 services = "4.4.2"
 crashlytics = "3.0.2"
-firebaseDatabaseKtx = "22.0.1"
-
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,15 +32,16 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 play-services-games = { group = "com.google.android.gms", name = "play-services-games", version.ref = "playServicesGames" }
 
-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom"}
-firebase-crashlytics = {module = "com.google.firebase:firebase-crashlytics"}
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
-firebase-auth = { module = "com.google.firebase:firebase-auth"}
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
+firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-googleServices = { id  = "com.google.gms.google-services", version.ref = "services"}
+googleServices = { id = "com.google.gms.google-services", version.ref = "services" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

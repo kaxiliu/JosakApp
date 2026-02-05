@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
+import edu.josakapp.proyectoJosakapp.data.di.AppModule
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavigationHost
 import edu.josakapp.proyectoJosakapp.ui.theme.AplicationNewTheme
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
@@ -25,12 +26,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppModule.init(applicationContext)
         enableEdgeToEdge()
+
         setContent {
-            AplicationNewTheme{
+            AplicationNewTheme {
                 Surface {
                     val navController = rememberNavController()
-                    NavigationHost(navController = navController)
+
+                    // UserViewModel global para toda la app
+                    val userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+
+                    NavigationHost(
+                        navController = navController,
+                        userViewModel = userViewModel
+                    )
                 }
             }
         }
