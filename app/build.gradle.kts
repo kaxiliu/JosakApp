@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
-    alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
 }
 
@@ -41,15 +41,16 @@ android {
         compose = true
     }
 }
-
 dependencies {
 
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.database)
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 
 
+    // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,21 +61,22 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("androidx.navigation:navigation-compose:2.9.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2")
-    // Glide for image loading
+
+    // Imágenes
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")
-    implementation("androidx.navigation:navigation-compose:2.9.2")
-    // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.play.services.games)
 
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // Room
     implementation("androidx.room:room-runtime:2.7.2")
-    implementation("androidx.room:room-ktx:2.7.2") // Soporte para Coroutines y Kotlin Extensions.
-    ksp("androidx.room:room-compiler:2.7.2") // KSP para procesamiento de anotaciones.
+    implementation("androidx.room:room-ktx:2.7.2")
+    ksp("androidx.room:room-compiler:2.7.2")
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

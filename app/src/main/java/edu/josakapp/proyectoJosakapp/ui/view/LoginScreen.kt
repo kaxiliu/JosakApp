@@ -3,47 +3,39 @@ package edu.josakapp.proyectoJosakapp.ui.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.josakapp.proyectoJosakapp.R
+import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.components.cuerpoHome
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.LoginViewModel
 
-/**Pantalla encargada de el login del usuario*/
-/**Ver parametros de name y pass*/
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeScreen(
-    onGoSecondScreen: () -> Unit,
+    onGoSecondScreen: (User) -> Unit,   // ← ahora recibe un User completo
     onGoRegisterScreen: () -> Unit,
-    onGoForgotPasswordScreen: () -> Unit
+    onGoForgotPasswordScreen: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
 ) {
-    var name by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    Card(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
+    val state = viewModel.uiState
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    Card(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+
             Image(
                 painter = painterResource(id = R.drawable.fondo_claro),
                 contentDescription = "Fondo",
@@ -62,21 +54,35 @@ fun HomeScreen(
                     .border(1.dp, Color.White.copy(0.3f), RoundedCornerShape(28.dp))
             ) {
                 cuerpoHome(
-                    name = name,
-                    pass = pass,
-                    onNameChange = { name = it },
-                    onPassChange = { pass = it },
-                    onGoSecondScreen = onGoSecondScreen,
+                    name = state.name,
+                    pass = state.pass,
+                    onNameChange = viewModel::onNameChange,
+                    onPassChange = viewModel::onPassChange,
+                    onGoSecondScreen = {
+                        viewModel.login(
+                            onSuccess = { user ->
+                                errorMessage = null
+                                onGoSecondScreen(user)   // ← enviamos el User completo
+                            },
+                            onError = { msg ->
+                                errorMessage = msg
+                            }
+                        )
+                    },
                     onGoRegisterScreen = onGoRegisterScreen,
                     onGoForgotPasswordScreen = onGoForgotPasswordScreen
+                )
+            }
+
+            errorMessage?.let { msg ->
+                Text(
+                    text = msg,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 40.dp)
                 )
             }
         }
     }
 }
-
-
-/* TextButton(onClick = { navController.navigate("forgot_password") }) {
-    Text("¿Olvidaste tu contraseña?")
-}
-*/

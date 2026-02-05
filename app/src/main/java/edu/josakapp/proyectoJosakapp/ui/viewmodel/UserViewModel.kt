@@ -1,40 +1,24 @@
 package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
-import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.User
-import edu.josakapp.proyectoJosakapp.data.network.AuthService
-import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+class UserViewModel : ViewModel() {
 
-    private val userRepository: UserRepository
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
-    init {
-        val database = AppDatabase.getInstance(application)
-        val localDatasource = LocalDatasource(
-            database.usersDAO(),
-            database.habitosDAO(),
-            database.amigosDAO()
-        )
-
-        userRepository = UserRepository(localDatasource, AuthService())
+    /** Se llama desde el login cuando ya tenemos el User cargado */
+    fun setUser(user: User) {
+        _user.value = user
     }
 
-    fun getUsersWithHabitos() = userRepository.getUsersWithHabitos()
-
-    suspend fun getUserById(id: Int) = userRepository.getUserById(id)
-
-    fun insertUser(user: User) = viewModelScope.launch {
-        userRepository.insertUser(user)
-    }
-
-    /**Función que se usara en el mainActivity para el logeo del user*/
-    fun isUserLogged(): Boolean {
-        return userRepository.isUserLogged()
+    /** Si quieres actualizar datos del usuario */
+    fun updateUser(updated: User) {
+        _user.value = updated
     }
 }

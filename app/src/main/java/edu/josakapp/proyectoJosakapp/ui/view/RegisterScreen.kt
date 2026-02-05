@@ -7,22 +7,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-
-/**
- * Pantalla de registro de usuario.
- * Permite introducir nombre, correo y contraseña,
- * con validación básica antes de enviar los datos.
- */
-
-//Esto hay que cambiarlo en algun momento, está así para pruebas
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.RegisterViewModel
 
 @Composable
 fun RegisterScreen(
-    onRegister: (String, String, String) -> Unit = { _, _, _ -> },
-    onGoLogin: () -> Unit = {}
+    onRegisterSuccess: (User) -> Unit,
+    onGoLogin: () -> Unit,
+    viewModel: RegisterViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
@@ -125,8 +120,18 @@ fun RegisterScreen(
                     }
 
                     else -> {
-                        onRegister(name.text, email.text, password.text)
-                        successMessage = "Registro completado correctamente"
+                        viewModel.register(
+                            name = name.text,
+                            email = email.text,
+                            password = password.text,
+                            onSuccess = { user ->
+                                successMessage = "Registro completado correctamente"
+                                onRegisterSuccess(user)
+                            },
+                            onError = { msg ->
+                                errorMessage = msg
+                            }
+                        )
                     }
                 }
             },
