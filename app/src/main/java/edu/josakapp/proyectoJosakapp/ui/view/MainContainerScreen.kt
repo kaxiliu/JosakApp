@@ -128,7 +128,7 @@ fun MainContainerScreen(user: User) {
                 val user by userViewModel.user.collectAsState()
                 MoneyScreen(
                     navController = bottomNavController,
-                    user =user
+                    user = listOfNotNull(user)
                 )
             }
 

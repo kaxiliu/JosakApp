@@ -1,6 +1,9 @@
 package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +13,7 @@ import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
+import edu.josakapp.proyectoJosakapp.ui.components.HabitoWidget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,6 +77,7 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             try {
                 habitosRepository.updateEstado(id, estado)
+                refreshWidget()
                 Log.d("HabitosViewModel", "Habito estado updated successfully")
             } catch (e: Exception) {
                 Log.e("HabitosViewModel", "Error updating habito estado: ${e.message}", e)
@@ -113,11 +118,27 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             if (!estaCompletadoHoy) {
                 habitosRepository.insertRegistro(HabitoRegistro(habito.id_habito, hoy))
-                //updateEstado(habito.id_habito, true)
+                habitosRepository.updateEstado(habito.id_habito, true)
             } else {
                 habitosRepository.deleteRegistro(habito.id_habito, hoy)
-                //updateEstado(habito.id_habito, false)
+                habitosRepository.updateEstado(habito.id_habito, false)
             }
+            refreshWidget()
         }
+    }
+    //notificar al Widget que los datos han cambiado y debe actualizarse
+    private fun refreshWidget() {
+        //Crear un Intent dirigido a nuestra clase HabitoWidget
+        val intent = Intent(getApplication(), HabitoWidget::class.java).apply {
+            // Establecer la acción estándar de actualización de widgets
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        }
+        //Obtener los identificadores
+        val ids = AppWidgetManager.getInstance(getApplication())
+            .getAppWidgetIds(ComponentName(getApplication(), HabitoWidget::class.java))
+        //Pasar los IDs al Intent para que el sistema sepa qué widgets actualizar
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        //Enviar la señal (broadcast) para activar  onUpdate del Widget
+        getApplication<Application>().sendBroadcast(intent)
     }
 }
