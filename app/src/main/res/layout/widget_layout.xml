@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80000000"
@@ -44,13 +45,15 @@
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
 
-        <Button
+        <ImageView
             android:id="@+id/btn_widget_cumplir"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:text="Cumplir"
-            android:textSize="10sp"
-            android:backgroundTint="#7BB7F5" />
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/check"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
     </LinearLayout>
 
     <TextView
