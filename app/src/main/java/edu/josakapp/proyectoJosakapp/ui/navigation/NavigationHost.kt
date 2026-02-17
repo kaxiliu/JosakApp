@@ -7,21 +7,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.SettingsScreen
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.ThemeViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
-import edu.josakapp.proyectoJosakapp.R
 
 @Composable
 fun NavigationHost(
     navController: NavHostController,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    themeViewModel: ThemeViewModel
 ) {
 
     NavHost(
@@ -68,13 +67,13 @@ fun NavigationHost(
             ForgotPasswordScreen { }
         }
 
-        /** MAIN CONTAINER (lee el User desde UserViewModel) */
+        /** MAIN CONTAINER */
         composable(NavScreens.NavSecondScreen.ruta) {
-
             val user = userViewModel.user.collectAsState().value
 
             if (user != null) {
-                MainContainerScreen(user)
+                // CAMBIO AQUÍ: Tienes que pasarle el themeViewModel a la función
+                MainContainerScreen(user = user, themeViewModel = themeViewModel)
             }
         }
 
