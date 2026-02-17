@@ -16,4 +16,15 @@ sealed class NavScreens(val ruta: String) {
     object NavTiendaScreen : NavScreens("tienda")
     object NavPinguinoScreen : NavScreens("pinguino")
     object NavAjusteScreen : NavScreens("ajuste")
+
+    /**Navegación para la pantalla de ajustes*/
+    object NavPerfilScreen : NavScreens("sub_perfil")
+    object NavPreferenciasScreen : NavScreens("sub_preferencias")
+    object NavNotificacionesScreen : NavScreens("sub_notificaciones")
+    object NavConfiguracionPrivacidadScreen : NavScreens("sub_configuracion_privacidad")
+
+    /**Pantallas de la parte de notificaciones*/
+    object NavRecordatorioScreen : NavScreens("recordatorio")
+    object NavAmigosScreen : NavScreens("amigos")
+    object NavClasificacion
 }
