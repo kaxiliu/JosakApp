@@ -172,6 +172,16 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                     themeViewModel = themeViewModel
                 )
             }
+            composable(NavScreens.NavNotificacionesScreen.ruta) {
+                NotificacionesScreen(
+                    onBack = { bottomNavController.popBackStack() },
+                    onNavigate = { ruta -> bottomNavController.navigate(ruta) } // <--- Añade esto
+                )
+            }
+            composable(NavScreens.NavRecordatorioScreen.ruta) {
+                //RecordatorioScreen(onBack = { bottomNavController.popBackStack() })
+            }
+
         }
     }
 }
