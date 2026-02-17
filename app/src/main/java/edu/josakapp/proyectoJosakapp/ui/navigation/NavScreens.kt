@@ -26,5 +26,6 @@ sealed class NavScreens(val ruta: String) {
     /**Pantallas de la parte de notificaciones*/
     object NavRecordatorioScreen : NavScreens("recordatorio")
     object NavAmigosScreen : NavScreens("amigos")
-    object NavClasificacion
+    object NavClasificacion: NavScreens("clasificacion")
+    object NavAnuncio: NavScreens("Anuncio")
 }
