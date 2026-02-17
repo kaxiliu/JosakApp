@@ -1,18 +1,22 @@
 package edu.josakapp.proyectoJosakapp.ui.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
+import edu.josakapp.proyectoJosakapp.ui.view.SettingsScreen
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
+import edu.josakapp.proyectoJosakapp.R
 
 @Composable
 fun NavigationHost(
@@ -71,6 +75,21 @@ fun NavigationHost(
 
             if (user != null) {
                 MainContainerScreen(user)
+            }
+        }
+
+        /** PANTALLA AJUSTE PRINCIPAL */
+        composable(NavScreens.NavAjusteScreen.ruta) {
+            SettingsScreen(
+                onNavigate = {ruta -> navController.navigate(ruta)},
+                onBack = {navController.popBackStack() }
+            )
+        }
+
+        /**SUBPANTALLAS (Perfil) */
+        composable(NavScreens.NavPerfilScreen.ruta) {
+            SettingsScaffold(title = "PERFIL", onBackClick = { navController.popBackStack()}) {padding ->
+                Text("Pantalla perfil")
             }
         }
     }

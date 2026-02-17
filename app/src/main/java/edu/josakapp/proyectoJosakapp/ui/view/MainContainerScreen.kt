@@ -14,11 +14,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
+
+/**Este acuta como segundo NAvHost **/
 @Composable
 fun MainContainerScreen(user: User) {
 
@@ -145,7 +148,22 @@ fun MainContainerScreen(user: User) {
             }
 
             composable(NavScreens.NavAjusteScreen.ruta) {
-                Text("Ajuste")
+                SettingsScreen(
+                    onNavigate = { ruta ->
+                        bottomNavController.navigate(ruta)
+                    },
+                    onBack = {
+                        bottomNavController.popBackStack()
+                    }
+                )
+            }
+            composable(NavScreens.NavPerfilScreen.ruta) {
+                SettingsScaffold(
+                    title = "PERFIL",
+                    onBackClick = { bottomNavController.popBackStack() }
+                ) {
+                    Text("Pantalla de Perfil en construcción...")
+                }
             }
         }
     }
