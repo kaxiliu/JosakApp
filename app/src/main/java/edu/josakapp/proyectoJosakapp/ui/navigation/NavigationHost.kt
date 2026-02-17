@@ -72,7 +72,6 @@ fun NavigationHost(
             val user = userViewModel.user.collectAsState().value
 
             if (user != null) {
-                // CAMBIO AQUÍ: Tienes que pasarle el themeViewModel a la función
                 MainContainerScreen(user = user, themeViewModel = themeViewModel)
             }
         }
