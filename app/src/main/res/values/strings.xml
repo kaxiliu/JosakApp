@@ -12,4 +12,7 @@
     <string name="bienvenido_usuario">Bienvenido %s</string>
     <string name="txt_acceso_rapido">Acceso rápido</string>
 
+    <!--Pantalla de ajustes-->
+    <string name="txt_notificaciones">Configuración de notificaciones</string>
+
 </resources>
