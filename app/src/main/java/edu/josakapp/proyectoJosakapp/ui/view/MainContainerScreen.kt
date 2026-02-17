@@ -18,12 +18,13 @@ import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.ThemeViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
 /**Este acuta como segundo NAvHost **/
 @Composable
-fun MainContainerScreen(user: User) {
+fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
 
     val bottomNavController = rememberNavController()
 
@@ -164,6 +165,12 @@ fun MainContainerScreen(user: User) {
                 ) {
                     Text("Pantalla de Perfil en construcción...")
                 }
+            }
+            composable(NavScreens.NavPreferenciasScreen.ruta) {
+                PreferenciasScreen(
+                    onBack = { bottomNavController.popBackStack() },
+                    themeViewModel = themeViewModel
+                )
             }
         }
     }
