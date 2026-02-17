@@ -15,10 +15,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.data.di.AppModule
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavigationHost
 import edu.josakapp.proyectoJosakapp.ui.theme.AplicationNewTheme
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.ThemeViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
@@ -30,16 +32,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            AplicationNewTheme {
+            val themeViewModel: ThemeViewModel = viewModel()  // instanciamos el viewmodel
+            AplicationNewTheme (
+                darkTheme = themeViewModel.isDarkMode,
+                dynamicColor = false
+            ){
                 Surface {
                     val navController = rememberNavController()
-
                     // UserViewModel global para toda la app
                     val userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
 
                     NavigationHost(
                         navController = navController,
-                        userViewModel = userViewModel
+                        userViewModel = userViewModel,
+                        themeViewModel = themeViewModel
                     )
                 }
             }
