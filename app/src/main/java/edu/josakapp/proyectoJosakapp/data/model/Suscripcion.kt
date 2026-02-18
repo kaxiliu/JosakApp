@@ -2,7 +2,6 @@ package edu.josakapp.proyectoJosakapp.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 /**Clase encargada de la suscripcion*/
 @Entity(tableName = "suscripcion")
