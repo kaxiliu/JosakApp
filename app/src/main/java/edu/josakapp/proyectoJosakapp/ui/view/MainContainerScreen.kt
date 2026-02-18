@@ -90,7 +90,22 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                     label = { Text("Pingüino") }
                 )
 
+                // Navegado a perfil
+
+                // En tu NavigationBar dentro de MainContainerScreen
                 NavigationBarItem(
+                    selected = currentRoute == NavScreens.NavPerfilScreen.ruta, // Ahora la ruta principal es Perfil
+                    onClick = {
+                        bottomNavController.navigate(NavScreens.NavPerfilScreen.ruta) {
+                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
+                    label = { Text("Perfil") } // Cambiamos "Ajustes" por "Perfil"
+                )
+                /*NavigationBarItem(
                     selected = currentRoute == NavScreens.NavAjusteScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta) {
@@ -100,8 +115,8 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                         }
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Ajustes") },
-                    label = { Text("Ajustes") }
-                )
+                    label = { Text("Ajustes") }*
+                )*/
             }
         }
     ) { innerPadding ->
@@ -159,12 +174,12 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                 )
             }
             composable(NavScreens.NavPerfilScreen.ruta) {
-                SettingsScaffold(
-                    title = "PERFIL",
-                    onBackClick = { bottomNavController.popBackStack() }
-                ) {
-                    Text("Pantalla de Perfil en construcción...")
-                }
+                PerfilScreen(
+                    user = user,
+                    onNavigateToSettings = {
+                        bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta)
+                    }
+                )
             }
             composable(NavScreens.NavPreferenciasScreen.ruta) {
                 PreferenciasScreen(
