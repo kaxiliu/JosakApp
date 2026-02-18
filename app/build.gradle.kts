@@ -71,11 +71,15 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // icons
+    implementation("androidx.compose.material:material-icons-extended:1.7.0")
+
     // Room
     implementation("androidx.room:room-runtime:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.material3)
     ksp("androidx.room:room-compiler:2.7.2")
 
     // Tests
