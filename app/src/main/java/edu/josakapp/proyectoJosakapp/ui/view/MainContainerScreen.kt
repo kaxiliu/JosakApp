@@ -141,7 +141,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
-                Text("Tienda Screen")
+                TiendaScreen(user)
             }
 
             composable(NavScreens.NavPinguinoScreen.ruta) {
