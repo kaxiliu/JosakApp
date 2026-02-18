@@ -191,6 +191,13 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
             composable(NavScreens.NavClasificacion.ruta) {
                 ClasificacionNotificacionesScreen(onBack = { bottomNavController.popBackStack() })
             }
+            // Anuncios
+            composable(NavScreens.NavAnuncioScreen.ruta) { // Asegúrate que NavAnunciosScreen existe en tu objeto NavScreens
+                AnunciosScreen(onBack = { bottomNavController.popBackStack() })
+            }
+            composable(NavScreens.NavConfiguracionPrivacidadScreen.ruta) {
+                PrivacidadScreen(onBack = { bottomNavController.popBackStack() })
+            }
         }
     }
 }
