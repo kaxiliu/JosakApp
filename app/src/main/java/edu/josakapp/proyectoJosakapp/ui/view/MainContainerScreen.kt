@@ -181,6 +181,12 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
             composable(NavScreens.NavRecordatorioScreen.ruta) {
                 RecordatorioScreen(onBack = { bottomNavController.popBackStack() })
             }
+            // Sub Menu de amigos
+            composable(NavScreens.NavAmigosScreen.ruta) {
+                SubMenuAmigosScreen(
+                    onBack = { bottomNavController.popBackStack() }
+                )
+            }
         }
     }
 }
