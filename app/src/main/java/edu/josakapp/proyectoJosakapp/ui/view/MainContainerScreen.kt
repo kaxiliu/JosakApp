@@ -187,6 +187,10 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                     onBack = { bottomNavController.popBackStack() }
                 )
             }
+            // CLASIFICACIÓN
+            composable(NavScreens.NavClasificacion.ruta) {
+                ClasificacionNotificacionesScreen(onBack = { bottomNavController.popBackStack() })
+            }
         }
     }
 }
