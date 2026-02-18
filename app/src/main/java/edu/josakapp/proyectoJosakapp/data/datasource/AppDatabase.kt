@@ -16,10 +16,10 @@ import edu.josakapp.proyectoJosakapp.data.model.User
     entities = [
         Habito::class,
         User::class,
-        Amigo::class,   // ← NUEVA TABLA
+        Amigo::class,
         HabitoRegistro::class
     ],
-    version = 3,        // ← IMPORTANTE: subir versión
+    version = 3,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -40,7 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habitos.db"
                 )
-                    .fallbackToDestructiveMigration() // Solo en desarrollo
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance
