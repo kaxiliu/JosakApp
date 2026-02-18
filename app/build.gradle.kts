@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
     ksp("androidx.room:room-compiler:2.7.2")
 
     // Tests
