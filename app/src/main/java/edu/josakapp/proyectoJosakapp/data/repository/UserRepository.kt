@@ -4,7 +4,6 @@ import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.*
 import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
-import edu.josakapp.proyectoJosakapp.data.remote.RetrofitClient
 
 class UserRepository(
     private val local: LocalDatasource,
