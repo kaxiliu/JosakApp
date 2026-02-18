@@ -77,7 +77,7 @@ fun NotificacionesScreen(onBack: () -> Unit,
                     NotificationClickableItem(
                         title = "Anuncios",
                         subtitle = "Recibe noticias y novedades.",
-                        onClick = { /* Navegar a pantalla de anuncios */ }
+                        onClick = { onNavigate(NavScreens.NavAnuncioScreen.ruta) }
                     )
                 }
             }
