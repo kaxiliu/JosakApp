@@ -2,6 +2,7 @@ package edu.josakapp.proyectoJosakapp.ui.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +19,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -50,7 +59,8 @@ import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 @Composable
 fun PerfilScreen(
     user: User,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onCompleteProfile: () -> Unit // Nueva navegación para completar perfil
 ) {
     Column(
         modifier = Modifier
@@ -58,147 +68,167 @@ fun PerfilScreen(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        // --- CABECERA: TÍTULO Y BOTÓN DE AJUSTES ---
-        Row(
+        // --- 1. CABECERA (Foto y Ajustes) ---
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Spacer(modifier = Modifier.width(48.dp)) // Equilibrio visual
+            // Foto Central
+            Surface(
+                modifier = Modifier
+                    .size(100.dp)
+                    .align(Alignment.Center),
+                shape = CircleShape,
+                color = Color.LightGray.copy(alpha = 0.3f),
+                border = BorderStroke(2.dp, Color(0xFF03A9F4))
+            ) {
+                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.padding(20.dp))
+            }
 
-            Text(
-                text = "MI PERFIL",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
-            )
-
-            // EL BOTÓN DE LOS TRES PUNTOS (Acceso a Ajustes)
-            IconButton(onClick = { onNavigateToSettings() }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Ir a Ajustes",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+            // Tres puntos arriba a la derecha
+            IconButton(
+                onClick = { onNavigateToSettings() },
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                Icon(Icons.Default.MoreVert, contentDescription = "Ajustes")
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // --- SECCIÓN FOTO Y NOMBRE ---
+        // --- 2. NOMBRE Y SEGUIDORES (Estilo IG) ---
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Surface(
-                modifier = Modifier.size(120.dp),
-                shape = CircleShape,
-                color = Color.LightGray.copy(alpha = 0.2f),
-                border = BorderStroke(3.dp, Color(0xFF03A9F4)) // Azul característico
+            Text(
+                text = user.nombre_usuario ?: "Usuario",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+
+            Row(
+                modifier = Modifier.padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.padding(25.dp),
-                    tint = Color.Gray
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("124", fontWeight = FontWeight.Bold) // Ejemplo
+                    Text("Seguidores", fontSize = 12.sp, color = Color.Gray)
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("86", fontWeight = FontWeight.Bold) // Ejemplo
+                    Text("Siguiendo", fontSize = 12.sp, color = Color.Gray)
+                }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = user.nombre_usuario ?: "Usuario Josak",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-
-            Text(
-                text = user.email ?: "correo@ejemplo.com",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // --- SECCIÓN DE ESTADÍSTICAS (PUNTOS Y NIVEL) ---
+        // --- 3. BOTONES DE ACCIÓN (Añadir y Compartir) ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatItem(
-                label = "Puntos",
-                value = "${user.puntos}",
-                icon = Icons.Default.Star,
-                color = Color(0xFFFFD700), // Dorado
-                modifier = Modifier.weight(1f)
-            )
-            StatItem(
-                label = "Racha",
-                value = "7 días", // Esto podrías sacarlo de tus hábitos
-                icon = Icons.Default.Whatshot,
-                color = Color(0xFFFF5722), // Naranja fuego
-                modifier = Modifier.weight(1f)
-            )
+            Button(
+                onClick = { /* Lógica añadir */ },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4))
+            ) {
+                Text("Añadir amigos")
+            }
+
+            IconButton(
+                onClick = { /* Lógica compartir */ },
+                modifier = Modifier
+                    .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
+            ) {
+                Icon(Icons.Default.Share, contentDescription = "Compartir")
+            }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // --- TARJETA DE INFORMACIÓN DETALLADA ---
+        // --- 4. CUADRO "COMPLETA TU PERFIL" ---
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                .padding(24.dp)
+                .clickable { onCompleteProfile() },
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Detalles de cuenta",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-
-                ProfileDetailRow(label = "ID de Usuario", value = "#${user.id_usuario}")
-                HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
-                ProfileDetailRow(label = "Estado", value = "Usuario Activo")
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Completa tu perfil", fontWeight = FontWeight.Bold)
+                    Text("Añade una descripción y foto para que te reconozcan.", fontSize = 12.sp)
+                }
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
             }
         }
+
+        // --- 5. RESUMEN (4 CARDS DE STATS) ---
+        Text(
+            text = "Resumen de actividad",
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+            fontWeight = FontWeight.Bold
+        )
+
+        // Usamos un Grid de 2x2
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                StatSmallCard("Racha", "7 días", Icons.Default.Whatshot, Color(0xFFFF5722), Modifier.weight(1f))
+                StatSmallCard("Exp Total", "2500 XP", Icons.Default.Bolt, Color(0xFFFFD700), Modifier.weight(1f))
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                StatSmallCard("Rango", "Oro II", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
+                StatSmallCard("Posición", "#12", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
+            }
+        }
+
+        // --- 6. LOGROS ---
+        Text(
+            text = "Mis Logros",
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 8.dp),
+            fontWeight = FontWeight.Bold
+        )
+
+        // Simulación de fila de logros
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            repeat(4) {
+                Surface(
+                    modifier = Modifier.size(60.dp),
+                    shape = CircleShape,
+                    color = Color.LightGray.copy(alpha = 0.2f)
+                ) {
+                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.padding(15.dp), tint = Color.Gray)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
 @Composable
-fun StatItem(label: String, value: String, icon: ImageVector, color: Color, modifier: Modifier) {
+fun StatSmallCard(label: String, value: String, icon: ImageVector, color: Color, modifier: Modifier) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(imageVector = icon, contentDescription = null, tint = color)
-            Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.Black)
-            Text(text = label, fontSize = 12.sp, color = Color.Gray)
+        Column(modifier = Modifier.padding(12.dp)) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = label, fontSize = 11.sp, color = Color.Gray)
         }
-    }
-}
-
-@Composable
-fun ProfileDetailRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, color = Color.Gray, fontSize = 14.sp)
-        Text(text = value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
     }
 }

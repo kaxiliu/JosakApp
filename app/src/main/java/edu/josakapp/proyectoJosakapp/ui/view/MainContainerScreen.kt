@@ -178,7 +178,14 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                     user = user,
                     onNavigateToSettings = {
                         bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta)
-                    }
+                    },
+                    onCompleteProfile = {bottomNavController.navigate(NavScreens.NavCompletarPerfil.ruta)}
+                )
+            }
+            composable(NavScreens.NavCompletarPerfil.ruta) {
+                CompletarPerfilScreen(
+                    user = user,
+                    onBack = { bottomNavController.popBackStack() }
                 )
             }
             composable(NavScreens.NavPreferenciasScreen.ruta) {

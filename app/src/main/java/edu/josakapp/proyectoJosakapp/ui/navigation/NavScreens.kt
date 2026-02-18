@@ -19,6 +19,7 @@ sealed class NavScreens(val ruta: String) {
 
     /**Navegación para la pantalla de ajustes*/
     object NavPerfilScreen : NavScreens("sub_perfil")
+    object NavCompletarPerfil: NavScreens("sub_completar_perfil")
     object NavPreferenciasScreen : NavScreens("sub_preferencias")
     object NavNotificacionesScreen : NavScreens("sub_notificaciones")
     object NavConfiguracionPrivacidadScreen : NavScreens("sub_configuracion_privacidad")
