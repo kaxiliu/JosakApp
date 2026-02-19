@@ -35,15 +35,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
 /**Clase que se encargará de mostrar la pantalla de ajustes de la app*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen (onNavigate: (String) -> Unit,
-                    onBack: () -> Unit){
+                    onBack: () -> Unit,
+                    userViewModel: UserViewModel = viewModel()){
     val colorCeleste = Color(0xFF03A9F4)
     SettingsScaffold(title = "AJUSTES", onBackClick = onBack){padding ->
         Column(
@@ -85,7 +88,9 @@ fun SettingsScreen (onNavigate: (String) -> Unit,
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { /* Lógica de cerrar sesión */ },
+                onClick = {com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                          userViewModel.logout()
+                          onNavigate(NavScreens.NavMainScreen.ruta)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

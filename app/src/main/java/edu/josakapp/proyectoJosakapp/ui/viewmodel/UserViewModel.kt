@@ -51,4 +51,7 @@ class UserViewModel (): ViewModel() {
             }
         }
     }
+    fun logout() {
+        _user.value = null // Limpiamos el estado del usuario
+    }
 }
