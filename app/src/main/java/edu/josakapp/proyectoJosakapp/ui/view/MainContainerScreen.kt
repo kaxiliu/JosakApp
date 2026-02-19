@@ -31,6 +31,10 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
     val habitosViewModel: HabitosViewModel = viewModel()
     val rankingViewModel: RankingViewModel = viewModel()
     val userViewModel: UserViewModel=viewModel()
+    // Cargar el usuario actual en el UserViewModel
+    //val currentUser by userViewModel.user.collectAsState()
+    val currentUserState by userViewModel.user.collectAsState()
+    val activeUser = currentUserState ?: user
 
     Scaffold(
         bottomBar = {
@@ -130,24 +134,27 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
             composable(NavScreens.NavHabitoScreen.ruta) {
                 HabitoScreen(
                     habitosViewModel,
-                    userId = user.id_usuario,   // ← ahora sí
+                    userViewModel,
+                    userId = user.id_usuario,
                     navController = bottomNavController
                 )
+
             }
 
             composable("stats") {
                 val registros by habitosViewModel.todosLosRegistros.collectAsState()
                 StatsScreen(
                     navController = bottomNavController,
-                    registros = registros
+                    registros = registros,
+                    user=activeUser
                 )
+
             }
 
             composable("money") {
-                val user by userViewModel.user.collectAsState()
                 MoneyScreen(
                     navController = bottomNavController,
-                    user = listOfNotNull(user)
+                    user = listOf(activeUser)
                 )
             }
 
@@ -156,7 +163,9 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
-                TiendaScreen(user)
+                // TiendaScreen(user)
+                TiendaScreen(user=activeUser)
+
             }
 
             composable(NavScreens.NavPinguinoScreen.ruta) {

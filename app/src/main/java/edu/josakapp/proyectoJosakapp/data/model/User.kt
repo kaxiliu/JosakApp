@@ -20,5 +20,12 @@ data class User(
     val fotoPerfil: String, /**Variable nueva añadida*/
     val nivel:Int, //Nivel de Ranking
     val puntos:Int
-
-)
+){
+    companion object {
+        //Calcula el nivel del usuario basado en su XP total.
+        // Por ejemplo, cada 100 XP es un nivel.
+        fun calculateLevel(xp: Int): Int {
+            return kotlin.math.sqrt(xp / 100.0).toInt() + 1
+        }
+    }
+}

@@ -126,18 +126,18 @@ fun HabitoCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LinearProgressIndicator(
-                    progress = (habito.exp_habito.coerceIn(0, 100) / 100f),
+                    progress = if (habito.estado) 1f else 0f,
                     modifier = Modifier
                         .weight(1f)
                         .height(6.dp),
-                    color = Color(0xFF64B5F6),
-                    trackColor = Color(0xFFE0E0E0)
+                    color = if (habito.estado) Color(0xFF4CAF50) else Color(0xFFE0E0E0),
+                    trackColor = if (habito.estado) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "${habito.exp_habito} XP",
                     fontSize = 11.sp,
-                    color = Color.Gray,
+                    color = if (habito.estado) Color(0xFF4CAF50) else Color.Gray,
                     fontWeight = FontWeight.Bold
                     )
                 }

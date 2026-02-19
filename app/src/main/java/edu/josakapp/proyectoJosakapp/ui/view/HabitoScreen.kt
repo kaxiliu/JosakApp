@@ -79,12 +79,14 @@ import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
 import edu.josakapp.proyectoJosakapp.ui.components.DraggablePenguin
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoCard
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHostController) {
+fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
+                 userId: Int, navController: NavHostController) {
     var showDialog by remember { mutableStateOf(false) }// Abrir el añadir un habito
     var showDeleteDialog by remember { mutableStateOf(false) }//Borrar el habito
     val listaHabitos by viewModel.habitos.collectAsState()
@@ -109,6 +111,13 @@ fun HabitoScreen(viewModel: HabitosViewModel, userId: Int,navController: NavHost
 
     LaunchedEffect(userId) {
         viewModel.loadHabitos(userId)
+    }
+    LaunchedEffect(Unit) {
+        viewModel.userXpUpdated.collect { updatedUserId ->
+            if (updatedUserId == userId) {
+                userViewModel.refreshUser(userId)
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

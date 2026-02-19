@@ -71,6 +71,16 @@ fun AnyadirHabito(
     // Cargamos la frecuencia guardada o la primera por defecto
     var selectedOption by remember { mutableStateOf(habitoInicial?.frecuencia ?: options[0]) }
 
+    // Asignamos XP según la frecuencia seleccionada,
+    // usando remember para evitar recalcularlo innecesariamente
+    val xpValue = remember(selectedOption) {
+        when (selectedOption) {
+            "Todos los días" -> 10
+            "Todas las semanas" -> 30
+            "Todos los meses" -> 50
+            else -> 10
+        }
+    }
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -110,7 +120,7 @@ fun AnyadirHabito(
                                     Habito(
                                         nombre = habitName,
                                         descripcion = habitDescription,
-                                        exp_habito = 0,
+                                        exp_habito = xpValue, // Asignamos el XP calculado según la frecuencia
                                         frecuencia = selectedOption,
                                         estado = false,
                                         fecha_creacion = System.currentTimeMillis(),
@@ -119,9 +129,17 @@ fun AnyadirHabito(
                                         colorHex=colorVal
                                     )
                                 }else{
+                                    // Si estamos editando, mantenemos el XP original
+                                    // si la frecuencia no ha cambiado
+                                    val finalXp = if (habitoInicial.frecuencia == selectedOption) {
+                                        habitoInicial.exp_habito
+                                    } else {
+                                        xpValue
+                                    }
                                     habitoInicial.copy(
                                         nombre = habitName,
                                         descripcion = habitDescription,
+                                        exp_habito = finalXp,
                                         frecuencia = selectedOption,
                                         icono = selectedIcon,
                                         colorHex = colorVal

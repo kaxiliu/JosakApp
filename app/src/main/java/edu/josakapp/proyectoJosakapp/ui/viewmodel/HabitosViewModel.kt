@@ -14,8 +14,11 @@ import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoWidget
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -31,6 +34,11 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
     private val _todosLosRegistros = MutableStateFlow<List<HabitoRegistro>>(emptyList())
     val todosLosRegistros: StateFlow<List<HabitoRegistro>> = _todosLosRegistros.asStateFlow()
     private val habitosRepository: HabitosRepository
+
+    // Flujo para notificar cambios en el XP del usuario
+    private val _userXpUpdated = MutableSharedFlow<Int>()
+    // Exponer el flujo como SharedFlow para que otras partes de la app puedan suscribirse a los cambios de XP
+    val userXpUpdated: SharedFlow<Int> = _userXpUpdated.asSharedFlow()
 
     init {
         val database = AppDatabase.getInstance(application)
@@ -119,6 +127,10 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
             if (!estaCompletadoHoy) {
                 habitosRepository.insertRegistro(HabitoRegistro(habito.id_habito, hoy))
                 habitosRepository.updateEstado(habito.id_habito, true)
+                habitosRepository.addXpToUser(habito.id_usuario, habito.exp_habito)
+
+                // Emitir el ID del usuario para notificar que su XP ha sido actualizado
+                _userXpUpdated.emit(habito.id_usuario)
             } else {
                 habitosRepository.deleteRegistro(habito.id_habito, hoy)
                 habitosRepository.updateEstado(habito.id_habito, false)

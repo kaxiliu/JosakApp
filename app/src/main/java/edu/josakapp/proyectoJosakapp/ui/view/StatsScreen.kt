@@ -26,12 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
+import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatsScreen(navController: NavController, registros: List<HabitoRegistro>) {
+fun StatsScreen(navController: NavController,
+                registros: List<HabitoRegistro>,
+                user: User?) {
     val totalDiasLogrados = registros.map { it.fecha }.distinct().size
+    val xpActual = user?.xp_total ?: 0 //    XP total del usuario
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -79,6 +83,23 @@ fun StatsScreen(navController: NavController, registros: List<HabitoRegistro>) {
 
             Spacer(modifier = Modifier.height(40.dp))
             CalendarCard(registros = registros)
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "EXPERIENCIA TOTAL",
+                    fontSize = 14.sp,
+                    letterSpacing = 1.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black.copy(alpha = 0.6f)
+                )
+                Text(
+                    text = "$xpActual XP",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF4CAF50)
+                )
+            }
         }
     }
 }

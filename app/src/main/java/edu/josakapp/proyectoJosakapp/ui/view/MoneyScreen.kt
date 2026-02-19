@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.User
+import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +88,7 @@ fun MoneyScreen(navController: NavController, user: List<User>) {
                 Spacer(modifier = Modifier.height(40.dp))
 
                 Button(
-                    onClick = { /* Ir la pantalla de  tienda */ },
+                    onClick = { navController.navigate(NavScreens.NavTiendaScreen.ruta) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF7BB7F5),

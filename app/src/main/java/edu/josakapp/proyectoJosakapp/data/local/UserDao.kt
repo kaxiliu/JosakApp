@@ -24,4 +24,15 @@ interface UserDao {
     // Inserta o actualiza un usuario
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User)
+
+
+    // Actualiza el XP total y el nivel de un usuario
+    @Query("UPDATE user SET xp_total = :xp, nivel = :level WHERE id_usuario = :userId")
+    suspend fun updateUserXpAndLevel(userId: Int, xp: Int, level: Int)
+
+    // Actualiza los puntos de un usuario
+    @Query("UPDATE user SET xp_total = :xp, nivel = :level, puntos = :puntos WHERE id_usuario = :userId")
+    suspend fun updateUserXpLevelAndPuntos(userId: Int, xp: Int, level: Int, puntos: Int)
+
+
 }

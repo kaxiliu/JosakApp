@@ -22,4 +22,10 @@ class HabitosRepository(private val local: LocalDatasource) {
     suspend fun insertRegistro(registro: HabitoRegistro) = local.insertRegistro(registro)
 
     suspend fun deleteRegistro(idHabito: Int, fecha: Long) = local.deleteRegistro(idHabito, fecha)
+
+    // Método para añadir XP a un usuario
+    suspend fun addXpToUser(userId: Int, xp: Int) {
+        local.updateUserXp(userId, xp)
+    }
+
 }

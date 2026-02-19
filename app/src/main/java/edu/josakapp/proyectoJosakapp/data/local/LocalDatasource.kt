@@ -24,6 +24,25 @@ class LocalDatasource(
 
     suspend fun insertUser(user: User) = userDao.insertUser(user)
 
+    // Actualiza el XP total y el nivel de un usuario
+    suspend fun updateUserXp(userId: Int, additionalXp: Int) {
+        val user = userDao.getUserById(userId)
+        if (user != null) {
+            val oldXp = user.xp_total
+            val newXp = oldXp + additionalXp
+            val newLevel = User.calculateLevel(newXp)
+
+            val oldHundreds = oldXp / 100
+            val newHundreds = newXp / 100
+            val rewardPuntos = (newHundreds - oldHundreds) * 10  // 10 puntos por cada 100 XP
+
+            val newPuntos = user.puntos + rewardPuntos
+
+
+            userDao.updateUserXpLevelAndPuntos(userId, newXp, newLevel, newPuntos)
+        }
+    }
+
 
     // -------------------------
     // HABITOS DAO
