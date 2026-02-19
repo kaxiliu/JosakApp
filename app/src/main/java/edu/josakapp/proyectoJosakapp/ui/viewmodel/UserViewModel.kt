@@ -31,4 +31,24 @@ class UserViewModel (): ViewModel() {
             updatedUser?.let { _user.value = it }
         }
     }
+    // Dentro de tu UserViewModel.kt
+
+    fun loadUserFromId(uid: String, onResult: (User?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                // Llamamos al repositorio para obtener los datos del usuario de Firestore/DB
+                val loadedUser = userRepository.loadUser(uid)
+
+                if (loadedUser != null) {
+                    _user.value = loadedUser // Guardamos el usuario en el State del ViewModel
+                    onResult(loadedUser)
+                } else {
+                    onResult(null)
+                }
+            } catch (e: Exception) {
+                // Si hay un error (ej. no hay internet), devolvemos null
+                onResult(null)
+            }
+        }
+    }
 }

@@ -2,10 +2,12 @@ package edu.josakapp.proyectoJosakapp.ui.navigation
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.firebase.auth.FirebaseAuth
 import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
@@ -21,7 +23,23 @@ fun NavigationHost(
     userViewModel: UserViewModel,
     themeViewModel: ThemeViewModel
 ) {
+    val auth = FirebaseAuth.getInstance()
 
+    LaunchedEffect(Unit) {
+        val  currentUser = auth.currentUser
+        if(currentUser != null) {
+            // El usuario ya está logueado en Firebase, cargamos sus datos de la DB
+            // Aquí llamarías a tu repositorio para obtener el objeto User completo
+            userViewModel.loadUserFromId(currentUser.uid) { user ->
+                if (user != null) {
+                    navController.navigate(NavScreens.NavSecondScreen.ruta) {
+                        popUpTo(NavScreens.NavMainScreen.ruta) { inclusive = true }
+                    }
+                }
+            }
+        }
+
+    }
     NavHost(
         navController = navController,
         startDestination = NavScreens.NavMainScreen.ruta
@@ -72,6 +90,9 @@ fun NavigationHost(
 
             if (user != null) {
                 MainContainerScreen(user = user, themeViewModel = themeViewModel)
+            } else {
+                // Si por alguna razón el usuario es nulo, vuelve al login
+                navController.navigate(NavScreens.NavMainScreen.ruta)
             }
         }
 
