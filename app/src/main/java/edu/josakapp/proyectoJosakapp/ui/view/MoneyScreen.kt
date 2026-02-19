@@ -88,7 +88,9 @@ fun MoneyScreen(navController: NavController, user: List<User>) {
                 Spacer(modifier = Modifier.height(40.dp))
 
                 Button(
-                    onClick = { navController.navigate(NavScreens.NavTiendaScreen.ruta) },
+                    onClick = {  navController.navigate(NavScreens.NavTiendaScreen.ruta) {
+                        launchSingleTop = true
+                    } },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF7BB7F5),

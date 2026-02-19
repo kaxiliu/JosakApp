@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -14,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.data.model.User
-import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
@@ -36,6 +36,16 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
     val currentUserState by userViewModel.user.collectAsState()
     val activeUser = currentUserState ?: user
 
+    LaunchedEffect(user.id_usuario) {
+        userViewModel.loadUser(user.id_usuario)
+    }
+
+    LaunchedEffect(habitosViewModel) {
+        habitosViewModel.userXpUpdated.collect { userId ->
+            userViewModel.refreshCurrentUser(userId)
+        }
+    }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -46,9 +56,10 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                     selected = currentRoute == NavScreens.NavHabitoScreen.ruta,
                     onClick = {
                         bottomNavController.navigate(NavScreens.NavHabitoScreen.ruta) {
-                            popUpTo(bottomNavController.graph.startDestinationId) { saveState = true }
+                            popUpTo(NavScreens.NavHabitoScreen.ruta) {
+                                inclusive = true
+                            }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     icon = { Icon(Icons.Default.Home, contentDescription = "Hábitos") },
@@ -135,7 +146,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                 HabitoScreen(
                     habitosViewModel,
                     userViewModel,
-                    userId = user.id_usuario,
+                    userId = activeUser.id_usuario,
                     navController = bottomNavController
                 )
 
@@ -146,7 +157,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
                 StatsScreen(
                     navController = bottomNavController,
                     registros = registros,
-                    user=activeUser
+                    userViewModel = userViewModel
                 )
 
             }

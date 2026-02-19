@@ -1,5 +1,6 @@
 package edu.josakapp.proyectoJosakapp.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.josakapp.proyectoJosakapp.data.di.AppModule.userRepository
@@ -12,6 +13,8 @@ class UserViewModel (): ViewModel() {
 
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
+
+    private var currentUserId: Int? = null
 
     /** Se llama desde el login cuando ya tenemos el User cargado */
     fun setUser(user: User) {
@@ -53,5 +56,28 @@ class UserViewModel (): ViewModel() {
     }
     fun logout() {
         _user.value = null // Limpiamos el estado del usuario
+    }
+    fun loadUser(userId: Int) {
+        currentUserId = userId
+        viewModelScope.launch {
+            try {
+                val userData = userRepository.getUserById(userId)
+                _user.value = userData
+            } catch (e: Exception) {
+                // Manejar error
+            }
+        }
+    }
+
+    fun refreshCurrentUser(userId: Int) {
+        viewModelScope.launch {
+            try {
+                val updatedUser = userRepository.getUserById(userId)
+                _user.value = updatedUser
+                Log.d("UserViewModel", "Usuario refrescado: XP=${updatedUser?.xp_total}")
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Error refrescando usuario", e)
+            }
+        }
     }
 }

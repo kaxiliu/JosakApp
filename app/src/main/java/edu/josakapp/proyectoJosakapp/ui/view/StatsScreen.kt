@@ -1,6 +1,7 @@
 package edu.josakapp.proyectoJosakapp.ui.view
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,14 +32,22 @@ import androidx.navigation.NavController
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavController,
                 registros: List<HabitoRegistro>,
-                user: User?) {
+                userViewModel: UserViewModel
+) {
+    val user by userViewModel.user.collectAsState()
     val totalDiasLogrados = registros.map { it.fecha }.distinct().size
     val xpActual = user?.xp_total ?: 0 //    XP total del usuario
+
+    LaunchedEffect(Unit) {
+        user?.id_usuario?.let { userViewModel.refreshUser(it) }
+    }
+
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -83,7 +95,7 @@ fun StatsScreen(navController: NavController,
 
             Spacer(modifier = Modifier.height(40.dp))
             CalendarCard(registros = registros)
-
+/*
             Spacer(modifier = Modifier.height(20.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -100,6 +112,8 @@ fun StatsScreen(navController: NavController,
                     color = Color(0xFF4CAF50)
                 )
             }
+
+*/
         }
     }
 }
