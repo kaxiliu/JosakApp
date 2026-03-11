@@ -234,10 +234,20 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
             }
         }
         if (showPenguin) {
+            val messageForPenguin = remember(listaHabitos, registros) {
+                val unfinishedHabit = listaHabitos.find { habit ->
+                    registros.none { it.id_habito == habit.id_habito && it.fecha == hoy }
+                }
+
+                unfinishedHabit?.let { "¿Has ${it.nombre} hoy?" } ?: "¡Todos los hábitos completados!"
+            }
+
             DraggablePenguin(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 50.dp, end = 10.dp)
+                    .padding(bottom = 90.dp, end = 10.dp),
+//                modifier = Modifier.fillMaxSize(),
+                message = messageForPenguin
             )
         }
 
