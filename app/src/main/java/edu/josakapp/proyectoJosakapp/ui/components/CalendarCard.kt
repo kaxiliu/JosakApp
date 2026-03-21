@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import edu.josakapp.proyectoJosakapp.data.model.Calendar
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import java.time.DayOfWeek
@@ -29,7 +31,9 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 @Composable
-fun CalendarCard(registros: List<HabitoRegistro>) {
+fun CalendarCard(registros: List<HabitoRegistro>,
+                 contentPadding: androidx.compose.foundation.layout.PaddingValues =
+    androidx.compose.foundation.layout.PaddingValues(16.dp)) {
     // Obtener la fecha actual del sistema
     val today = LocalDate.now()
 
@@ -55,7 +59,7 @@ fun CalendarCard(registros: List<HabitoRegistro>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(contentPadding),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         days.forEach { day ->
@@ -73,7 +77,7 @@ fun DayItem(day: Calendar) {
     ) {
         Box(
             modifier = Modifier
-                .size(width = 45.dp, height = 65.dp)
+                .size(width = 40.dp, height = 50.dp)
                 .clip(RoundedCornerShape(8.dp))
                 // Si termina un habito a ese dia ,el calendario va cambiar otro color
                 .background(if (day.isDone) Color(0xFF90EE90).copy(alpha = 0.8f)
@@ -85,10 +89,13 @@ fun DayItem(day: Calendar) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = day.dayName,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color = if (day.isDone) Color.White else Color.Black)
-                Spacer(modifier = Modifier.height(2.dp))
+
                 Text(
                     text = "${day.day}",
+                    fontSize = 12.sp,
                     color = if (day.isDone) Color.White else Color.Black
                 )
             }
