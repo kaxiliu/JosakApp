@@ -25,6 +25,9 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User)
 
+    //Obtene un usuario por su UID (identificador único de Firebase Authentication)
+    @Query("SELECT * FROM User WHERE uid = :uid LIMIT 1")
+    suspend fun getUserByUid(uid: String): User?
 
     // Actualiza el XP total y el nivel de un usuario
     @Query("UPDATE user SET xp_total = :xp, nivel = :level WHERE id_usuario = :userId")

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,6 +38,7 @@ import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 @Composable
 fun MoneyScreen(navController: NavController, user: List<User>) {
     val monedasActuales = user.firstOrNull()?.monedas ?: 1000
+    val xpActual = user.firstOrNull()?.xp_total ?: 0// Experencia total del usuario, se puede usar para mostrar el nivel o simplemente como información adicional
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -49,8 +51,8 @@ fun MoneyScreen(navController: NavController, user: List<User>) {
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Cerrar",
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
                         tint = Color.Black,
                         modifier = Modifier.size(30.dp)
                     )
@@ -85,7 +87,7 @@ fun MoneyScreen(navController: NavController, user: List<User>) {
                     color = Color(0xFFFFA500)
                 )
 
-                Spacer(modifier = Modifier.height(40.dp))
+
 
                 Button(
                     onClick = {  navController.navigate(NavScreens.NavTiendaScreen.ruta) {

@@ -9,6 +9,7 @@ import java.util.Date
 @Entity(tableName = "user")
 data class User(
     @PrimaryKey(autoGenerate = true) val id_usuario: Int = 0,
+    val uid: String = "", //UID generado por Firebase Authentication
     val nombre_usuario: String,
     val email: String,
     val contrasena: String,

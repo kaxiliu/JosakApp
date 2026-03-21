@@ -19,7 +19,7 @@ import edu.josakapp.proyectoJosakapp.data.model.User
         Amigo::class,
         HabitoRegistro::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

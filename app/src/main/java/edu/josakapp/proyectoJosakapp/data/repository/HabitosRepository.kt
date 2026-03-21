@@ -5,7 +5,8 @@ import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import kotlinx.coroutines.flow.Flow
 
-class HabitosRepository(private val local: LocalDatasource) {
+class HabitosRepository(private val local: LocalDatasource,
+                        private val userRepository: UserRepository) {
 
     fun getHabitosByUserId(userId: Int) = local.getHabitosByUserId(userId)
 
@@ -26,6 +27,24 @@ class HabitosRepository(private val local: LocalDatasource) {
     // Método para añadir XP a un usuario
     suspend fun addXpToUser(userId: Int, xp: Int) {
         local.updateUserXp(userId, xp)
+
+        //Actualizar en remoto después de modificar localmente
+        val updatedUser = local.getUserById(userId)
+        if (updatedUser != null && updatedUser.uid.isNotEmpty()) {
+            userRepository.syncUserToRemote(updatedUser)
+        }
+    }
+
+
+    suspend fun exchangeXpForMonedas(userId: Int, xpCost: Int, monedasGain: Int) {
+        val user = local.getUserById(userId) ?: return
+        if (user.xp_total >= xpCost) {
+            val updated = user.copy(
+                xp_total = user.xp_total - xpCost,
+                monedas = user.monedas + monedasGain
+            )
+            local.insertUser(updated)
+        }
     }
 
 }

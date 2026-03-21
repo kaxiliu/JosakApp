@@ -1,8 +1,9 @@
 package edu.josakapp.proyectoJosakapp.data.model
 
-fun UserRemote.toLocal(): User {
+fun UserRemote.toLocal(existingId: Int = 0): User {
     return User(
-        id_usuario = 0,
+        id_usuario = existingId,    //id_usuario = 0,
+        uid = uid, //el UID se mantiene para la sincronización con Firebase
         nombre_usuario = nombre_usuario,
         email = email,
         contrasena = "", // Firebase no devuelve contraseñas

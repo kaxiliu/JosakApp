@@ -13,18 +13,23 @@ class UserRepository(
 
     suspend fun loadUser(uid: String): User {
 
-        // 1. Intentar obtener desde Firestore
+        //obtener el usuario desde la base de datos local
+        val existingLocal = local.getUserByUid(uid)
+
+        // obtener desde Firestore
         val remoteUser = remote.getUser(uid)
 
         return if (remoteUser != null) {
 
-            val localUser = remoteUser.toLocal()
+            val localUser = remoteUser.toLocal(existingId = existingLocal?.id_usuario ?: 0)
             local.insertUser(localUser)
             localUser
-
+        }
+        else if (existingLocal != null) {
+            existingLocal
         } else {
 
-            // 2. Crear usuario nuevo
+            // Crear usuario nuevo
             val newRemote = UserRemote(
                 uid = uid,
                 nombre_usuario = "Nuevo usuario"
@@ -34,9 +39,8 @@ class UserRepository(
             remote.saveUser(newRemote)
 
             // Guardar en Room
-            val localUser = newRemote.toLocal()
+            val localUser = newRemote.toLocal(existingId = 0)
             local.insertUser(localUser)
-
             localUser
         }
     }
@@ -65,7 +69,13 @@ class UserRepository(
         return newUser
     }
 
-
+    // Sincronizar un usuario local con Firestore
+    suspend fun syncUserToRemote(user: User) {
+        val uid = user.uid
+        if (uid.isNotEmpty()) {
+            remote.saveUser(user.toRemote(uid))
+        }
+    }
 
 
     fun isUserLogged(): Boolean = authService.getCurrentUser() != null

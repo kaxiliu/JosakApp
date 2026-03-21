@@ -22,6 +22,9 @@ class LocalDatasource(
 
     suspend fun getUserById(id: Int) = userDao.getUserById(id)
 
+    // Obtiene un usuario por su UID (identificador único de Firebase Authentication)
+    suspend fun getUserByUid(uid: String): User? = userDao.getUserByUid(uid)
+
     suspend fun insertUser(user: User) = userDao.insertUser(user)
 
     // Actualiza el XP total y el nivel de un usuario

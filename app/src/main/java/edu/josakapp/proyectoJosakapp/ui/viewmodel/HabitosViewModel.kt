@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
+import edu.josakapp.proyectoJosakapp.data.di.AppModule
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
@@ -43,7 +44,8 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
     init {
         val database = AppDatabase.getInstance(application)
         val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO(), database.amigosDAO())
-        habitosRepository = HabitosRepository(localDatasource)
+        val userRepository = AppModule.userRepository
+        habitosRepository = HabitosRepository(localDatasource,userRepository)
         cargarTodosLosRegistros()
     }
 
