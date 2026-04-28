@@ -89,7 +89,8 @@ fun NavigationHost(
             val user = userViewModel.user.collectAsState().value
 
             if (user != null) {
-                MainContainerScreen(user = user, themeViewModel = themeViewModel)
+                MainContainerScreen(user = user, themeViewModel = themeViewModel,
+                    userViewModel = userViewModel)
             } else {
                 // Si por alguna razón el usuario es nulo, vuelve al login
                 navController.navigate(NavScreens.NavMainScreen.ruta)

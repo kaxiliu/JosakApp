@@ -24,13 +24,14 @@ import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 /**Este acuta como segundo NAvHost **/
 @Composable
-fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel) {
+fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
+                        userViewModel: UserViewModel) {
 
     val bottomNavController = rememberNavController()
 
     val habitosViewModel: HabitosViewModel = viewModel()
     val rankingViewModel: RankingViewModel = viewModel()
-    val userViewModel: UserViewModel=viewModel()
+    //val userViewModel: UserViewModel=viewModel()
     // Cargar el usuario actual en el UserViewModel
     //val currentUser by userViewModel.user.collectAsState()
     val currentUserState by userViewModel.user.collectAsState()
