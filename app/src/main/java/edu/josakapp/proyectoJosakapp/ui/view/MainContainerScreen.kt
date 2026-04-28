@@ -158,7 +158,8 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
                 StatsScreen(
                     navController = bottomNavController,
                     registros = registros,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    habitosViewModel=habitosViewModel
                 )
 
             }

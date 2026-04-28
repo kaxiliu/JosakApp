@@ -34,6 +34,14 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
     private val _registrosHoy = MutableStateFlow<List<HabitoRegistro>>(emptyList())
     private val _todosLosRegistros = MutableStateFlow<List<HabitoRegistro>>(emptyList())
     val todosLosRegistros: StateFlow<List<HabitoRegistro>> = _todosLosRegistros.asStateFlow()
+
+    // Flujo para mantener la racha actual del usuario
+    private val _rachaActual = MutableStateFlow(0)
+    val rachaActual: StateFlow<Int> = _rachaActual.asStateFlow()
+
+    // Flujo para mantener el total de días activos del usuario
+    private val _totalDiasActivos = MutableStateFlow(0)
+    val totalDiasActivos: StateFlow<Int> = _totalDiasActivos.asStateFlow()
     private val habitosRepository: HabitosRepository
 
     // Flujo para notificar cambios en el XP del usuario
@@ -53,10 +61,51 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             habitosRepository.getAllRegistros().collect { lista ->
                 _todosLosRegistros.value = lista
+                // Cada vez que se actualizan los registros,
+                // recalculamos las estadísticas
+                actualizarEstadisticas()
             }
         }
     }
+    private fun actualizarEstadisticas() {
+        val registros = _todosLosRegistros.value
+        if (registros.isEmpty()) {
+            _rachaActual.value = 0
+            _totalDiasActivos.value = 0
+            return
+        }
 
+        // Obtener fechas únicas en formato LocalDate y ordenarlas de más reciente a más antigua
+        val fechasUnicas = registros.map {
+            java.time.Instant.ofEpochMilli(it.fecha)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+        }.distinct().sortedDescending()
+
+        // 1. Total de días de actividad
+        _totalDiasActivos.value = fechasUnicas.size
+
+        // 2. Cálculo de la racha actual (Streak)
+        val hoy = LocalDate.now()
+        val ayer = hoy.minusDays(1)
+
+        // Si la última fecha no es hoy ni ayer, la racha se ha roto
+        if (fechasUnicas.first() != hoy && fechasUnicas.first() != ayer) {
+            _rachaActual.value = 0
+        } else {
+            var racha = 0
+            var fechaEsperada = fechasUnicas.first()
+            for (fecha in fechasUnicas) {
+                if (fecha == fechaEsperada) {
+                    racha++
+                    fechaEsperada = fechaEsperada.minusDays(1)
+                } else {
+                    break
+                }
+            }
+            _rachaActual.value = racha
+        }
+    }
     /**Cargar hábitos de un usuario específico*/
     fun loadHabitos(userId: Int) {
         viewModelScope.launch {

@@ -38,16 +38,21 @@ import androidx.navigation.NavController
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavController,
                 registros: List<HabitoRegistro>,
-                userViewModel: UserViewModel
+                userViewModel: UserViewModel,
+                habitosViewModel: HabitosViewModel
 ) {
     val user by userViewModel.user.collectAsState()
-    val totalDiasLogrados = registros.map { it.fecha }.distinct().size
+   //val totalDiasLogrados = registros.map { it.fecha }.distinct().size
+    val rachaActual by habitosViewModel.rachaActual.collectAsState()
+    val totalDiasActivos by habitosViewModel.totalDiasActivos.collectAsState()
+    val registros by habitosViewModel.todosLosRegistros.collectAsState()
     val xpActual = user?.xp_total ?: 0 //    XP total del usuario
 
     LaunchedEffect(Unit) {
@@ -95,7 +100,7 @@ fun StatsScreen(navController: NavController,
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(12.dp),
                 shape = RoundedCornerShape(16.dp),
                 color = Color(0xFFFFF8E7),
                 shadowElevation = 4.dp,
@@ -117,7 +122,7 @@ fun StatsScreen(navController: NavController,
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Card(
                 modifier = Modifier
@@ -143,7 +148,7 @@ fun StatsScreen(navController: NavController,
             ) {
                 // Mostrar el número de días logrados
                 Text(
-                    text = "$totalDiasLogrados",
+                    text = "$rachaActual",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF90EE90)
@@ -158,11 +163,21 @@ fun StatsScreen(navController: NavController,
                     modifier = Modifier.padding(bottom = 1.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            CalendarCard(registros = registros,
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp))
+
+           // Mostrar el esfuerzo total del usuario
+            Text(
+                text = "Esfuerzo total: $totalDiasActivos días",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
                 }
             }
+            CalendarCard(registros = registros,
+                modifier = Modifier.fillMaxWidth())
+
             Spacer(modifier = Modifier.height(20.dp))
 
             Card(

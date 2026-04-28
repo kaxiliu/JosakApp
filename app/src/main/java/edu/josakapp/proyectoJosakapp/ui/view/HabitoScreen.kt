@@ -202,7 +202,7 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
                     .padding(paddingValues)
             ) {
 
-                CalendarCard(registros = registros)
+                CalendarCard(registros = registros,puedeExpandirse = false)
 
                 Spacer(modifier = Modifier.height(5.dp))
 
