@@ -106,10 +106,12 @@ fun NavigationHost(
         }
 
         /**SUBPANTALLAS (Perfil) */
+        /**SUBPANTALLAS (Perfil)
         composable(NavScreens.NavPerfilScreen.ruta) {
             SettingsScaffold(title = "PERFIL", onBackClick = { navController.popBackStack()}) {padding ->
                 Text("Pantalla perfil")
             }
         }
+        }*/
     }
 }

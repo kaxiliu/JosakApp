@@ -8,7 +8,8 @@ import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
 class UserRepository(
     private val local: LocalDatasource,
     private val authService: AuthService,
-    private val remote: UserRemoteRepository
+    private val remote: UserRemoteRepository,
+    private val habitoRemoteRepository: edu.josakapp.proyectoJosakapp.data.remote.HabitoRemoteRepository
 ) {
 
     suspend fun loadUser(uid: String): User {
@@ -24,6 +25,17 @@ class UserRepository(
             val localUser = remoteUser.toLocal(existingId = existingLocal?.id_usuario ?: 0)
             local.insertUser(localUser)
             localUser
+            val generatedId = local.insertUser(localUser)
+            // Actualizar el objeto con el ID real generado por Room si era nuevo
+            val finalUser = if (localUser.id_usuario == 0) localUser.copy(id_usuario = generatedId.toInt()) else localUser
+
+            // Sincronizar hábitos desde Firestore a la base de datos local
+            val remoteHabitos = habitoRemoteRepository.getHabitos(uid)
+            remoteHabitos.forEach { habitoRemote ->
+                local.insertHabito(habitoRemote.toLocal(finalUser.id_usuario))
+            }
+
+            finalUser
         }
         else if (existingLocal != null) {
             existingLocal
@@ -42,11 +54,14 @@ class UserRepository(
             val localUser = newRemote.toLocal(existingId = 0)
             local.insertUser(localUser)
             localUser
+            val generatedId = local.insertUser(localUser)
+            localUser.copy(id_usuario = generatedId.toInt())
         }
     }
 
     suspend fun createUser(uid: String, name: String, email: String): User {
         val newUser = User(
+            uid = uid,
             nombre_usuario = name,
             email = email,
             contrasena = "",
@@ -65,8 +80,10 @@ class UserRepository(
 
         // Guardar en Room como User
         local.insertUser(newUser)
+        val generatedId = local.insertUser(newUser)
 
         return newUser
+        return newUser.copy(id_usuario = generatedId.toInt())
     }
 
     // Sincronizar un usuario local con Firestore
@@ -85,4 +102,5 @@ class UserRepository(
     suspend fun getUserById(id: Int) = local.getUserById(id)
 
     suspend fun insertUser(user: User) = local.insertUser(user)
+    suspend fun insertUser(user: User): Long = local.insertUser(user)
 }

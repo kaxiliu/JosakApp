@@ -35,11 +35,16 @@ object AppModule {
         UserRemoteRepository()
     }
 
+    val habitoRemoteRepository: edu.josakapp.proyectoJosakapp.data.remote.HabitoRemoteRepository by lazy {
+        edu.josakapp.proyectoJosakapp.data.remote.HabitoRemoteRepository()
+    }
+
     val userRepository: UserRepository by lazy {
         UserRepository(
             local = localDatasource,
             authService = authService,
-            remote = remoteRepository
+            remote = remoteRepository,
+            habitoRemoteRepository = habitoRemoteRepository
         )
     }
 }

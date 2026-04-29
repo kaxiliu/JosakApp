@@ -54,6 +54,8 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         val localDatasource = LocalDatasource(database.usersDAO(), database.habitosDAO(), database.amigosDAO())
         val userRepository = AppModule.userRepository
         habitosRepository = HabitosRepository(localDatasource,userRepository)
+        val habitoRemoteRepository = AppModule.habitoRemoteRepository
+        habitosRepository = HabitosRepository(localDatasource, userRepository, habitoRemoteRepository)
         cargarTodosLosRegistros()
     }
 
@@ -106,14 +108,19 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
             _rachaActual.value = racha
         }
     }
+    private var loadHabitosJob: kotlinx.coroutines.Job? = null
+
     /**Cargar hábitos de un usuario específico*/
     fun loadHabitos(userId: Int) {
         viewModelScope.launch {
+        loadHabitosJob?.cancel()
+        loadHabitosJob = viewModelScope.launch {
             habitosRepository.getHabitosByUserId(userId)
                 .catch { e ->
                     Log.e("HabitosViewModel", "Error loading habitos: ${e.message}", e)
                 }
                 .collect { list ->
+                    Log.d("HabitosViewModel", "Hábitos cargados para usuario $userId: ${list.size} hábitos encontrados.")
                     _habitos.value = list
                 }
         }

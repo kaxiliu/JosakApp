@@ -23,7 +23,7 @@ interface UserDao {
 
     // Inserta o actualiza un usuario
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUser(user: User)
+    suspend fun insertUser(user: User): Long
 
     //Obtene un usuario por su UID (identificador único de Firebase Authentication)
     @Query("SELECT * FROM User WHERE uid = :uid LIMIT 1")
