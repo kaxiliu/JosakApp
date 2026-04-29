@@ -48,7 +48,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
-
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     // AndroidX
     implementation(libs.androidx.core.ktx)

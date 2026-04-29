@@ -1,5 +1,8 @@
 package edu.josakapp.proyectoJosakapp.ui.view
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,23 +48,45 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import edu.josakapp.proyectoJosakapp.data.model.User
-import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
+import edu.josakapp.proyectoJosakapp.R
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
 @Composable
 fun PerfilScreen(
     user: User,
+    userViewModel: UserViewModel,
     onNavigateToSettings: () -> Unit,
     onCompleteProfile: () -> Unit // Nueva navegación para completar perfil
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    val userState by userViewModel.user.collectAsState()
+    val activeUser = userState ?: user
+
+    /**Abre la galería para la foto de perfil y puede seleccionar imagen*/
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            userViewModel.uploadProfilePicture(context, uri)
+            println("Imagen seleccionada: $uri")
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,12 +103,23 @@ fun PerfilScreen(
             Surface(
                 modifier = Modifier
                     .size(100.dp)
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .clickable{
+                        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
                 shape = CircleShape,
                 color = Color.LightGray.copy(alpha = 0.3f),
                 border = BorderStroke(2.dp, Color(0xFF03A9F4))
             ) {
-                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.padding(20.dp))
+                AsyncImage(
+                    model = activeUser.fotoPerfil,
+                    contentDescription = "Foto de perfil",
+                    placeholder = painterResource(R.drawable.ic_person_placeholder),
+                    error = painterResource(R.drawable.ic_person_placeholder),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                )
             }
 
             // Tres puntos arriba a la derecha
@@ -101,7 +137,7 @@ fun PerfilScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = user.nombre_usuario ?: "Usuario",
+                text = activeUser.nombre_usuario ?: "Usuario",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -174,16 +210,17 @@ fun PerfilScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // Usamos un Grid de 2x2
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatSmallCard("Racha", "7 días", Icons.Default.Whatshot, Color(0xFFFF5722), Modifier.weight(1f))
-                StatSmallCard("Exp Total", "2500 XP", Icons.Default.Bolt, Color(0xFFFFD700), Modifier.weight(1f))
+                // Falta poner la racha
+                StatSmallCard("Racha", "${activeUser.xp_total / 100} días", Icons.Default.Whatshot, Color(0xFFFF5722), Modifier.weight(1f))
+                StatSmallCard("Exp Total", "${user.xp_total} XP", Icons.Default.Bolt, Color(0xFFFFD700), Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatSmallCard("Rango", "Oro II", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
-                StatSmallCard("Posición", "#12", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
+                StatSmallCard("Rango", "${user.nivel}", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
+              //  StatSmallCard("Posición", "${user.}", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
+            /*Aqui comente posicion por que no hay ningun id, que tenga la posicion*/
             }
         }
 

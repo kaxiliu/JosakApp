@@ -12,6 +12,7 @@ import edu.josakapp.proyectoJosakapp.ui.components.SettingsScaffold
 import edu.josakapp.proyectoJosakapp.ui.view.ForgotPasswordScreen
 import edu.josakapp.proyectoJosakapp.ui.view.HomeScreen
 import edu.josakapp.proyectoJosakapp.ui.view.MainContainerScreen
+import edu.josakapp.proyectoJosakapp.ui.view.PerfilScreen
 import edu.josakapp.proyectoJosakapp.ui.view.RegisterScreen
 import edu.josakapp.proyectoJosakapp.ui.view.SettingsScreen
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.ThemeViewModel
@@ -113,5 +114,19 @@ fun NavigationHost(
             }
         }
         }*/
+        composable(NavScreens.NavPerfilScreen.ruta) {
+            val user = userViewModel. user.collectAsState().value
+
+            if(user != null){
+                PerfilScreen(
+                    user = user,
+                    userViewModel = userViewModel,
+                    onNavigateToSettings = { navController.navigate(NavScreens.NavAjusteScreen.ruta) },
+                    onCompleteProfile = { navController.navigate(NavScreens.NavCompletarPerfil.ruta) }
+                )
+            } else {
+                navController.navigate(NavScreens.NavMainScreen.ruta)
+            }
+        }
     }
 }

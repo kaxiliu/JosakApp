@@ -145,12 +145,11 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
 
             composable(NavScreens.NavHabitoScreen.ruta) {
                 HabitoScreen(
-                    habitosViewModel,
-                    userViewModel,
+                    viewModel = habitosViewModel,
+                    userViewModel = userViewModel,
                     userId = activeUser.id_usuario,
                     navController = bottomNavController
                 )
-
             }
 
             composable("stats") {
@@ -197,7 +196,8 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
             }
             composable(NavScreens.NavPerfilScreen.ruta) {
                 PerfilScreen(
-                    user = user,
+                    user = activeUser,
+                    userViewModel = userViewModel,
                     onNavigateToSettings = {
                         bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta)
                     },
