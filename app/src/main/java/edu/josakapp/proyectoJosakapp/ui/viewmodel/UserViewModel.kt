@@ -141,4 +141,47 @@ class UserViewModel (): ViewModel() {
             }
         }
     }
+
+
+
+    // Variable para evitar repeticiones mientras la app esté abierta
+    private val misionesEntregadasEnSesion = mutableSetOf<String>()
+
+    fun completarMision(userId: Int, tipo: String, xpRecompensa: Int) {
+        val currentUser = _user.value ?: return
+
+
+        if (currentUser.xp_total >= 450) {
+            Log.d("XP_DEBUG", "Misión ignorada: El usuario ya tiene suficiente XP ($currentUser.xp_total)")
+            return
+        }
+
+        // Si es la misión de hábitos (200 XP) y el usuario ya tiene XP,
+        // podríamos tener un problema si ya ganó XP por otros medios.
+        // Por eso, lo ideal es usar una lista temporal en memoria para la sesión actual
+
+        if (misionesEntregadasEnSesion.contains(tipo)) return
+
+        viewModelScope.launch {
+            try {
+                val newXp = currentUser.xp_total + xpRecompensa
+                val newLevel = User.calculateLevel(newXp)
+                val updatedUser = currentUser.copy(xp_total = newXp, nivel = newLevel)
+
+                // Guardar en local y remoto
+                userRepository.insertUser(updatedUser)
+                userRepository.syncUserToRemote(updatedUser)
+
+                // Actualizar UI
+                _user.value = updatedUser
+                misionesEntregadasEnSesion.add(tipo) // Marcar para no repetir en esta sesión
+
+                Log.d("XP_DEBUG", "Misión $tipo completada. Nuevo XP: ${updatedUser.xp_total}")
+            } catch (e: Exception) {
+                Log.e("XP_ERROR", "Error al actualizar XP", e)
+            }
+        }
+    }
+
+
 }
