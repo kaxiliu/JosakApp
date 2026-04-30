@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.ktx.storage
 import edu.josakapp.proyectoJosakapp.data.di.AppModule.userRepository
 import edu.josakapp.proyectoJosakapp.data.model.User
@@ -47,31 +46,36 @@ class UserViewModel (): ViewModel() {
         _user.value = updated
     }
 
+    //Refresca los datos del usuario desde la base de datos
+    // útil después de actualizar XP o nivel
     fun refreshUser(userId: Int) {
         viewModelScope.launch {
             val updatedUser = userRepository.getUserById(userId)
             updatedUser?.let { _user.value = it }
         }
     }
+    // Dentro de tu UserViewModel.kt
 
     fun loadUserFromId(uid: String, onResult: (User?) -> Unit) {
         viewModelScope.launch {
             try {
+                // Llamamos al repositorio para obtener los datos del usuario de Firestore/DB
                 val loadedUser = userRepository.loadUser(uid)
 
                 if (loadedUser != null) {
-                    _user.value = loadedUser
+                    _user.value = loadedUser // Guardamos el usuario en el State del ViewModel
                     onResult(loadedUser)
                 } else {
                     onResult(null)
                 }
             } catch (e: Exception) {
+                // Si hay un error (ej. no hay internet), devolvemos null
                 onResult(null)
             }
         }
     }
     fun logout() {
-        _user.value = null
+        _user.value = null // Limpiamos el estado del usuario
     }
     fun loadUser(userId: Int) {
         currentUserId = userId
@@ -80,6 +84,7 @@ class UserViewModel (): ViewModel() {
                 val userData = userRepository.getUserById(userId)
                 _user.value = userData
             } catch (e: Exception) {
+                // Manejar error
             }
         }
     }
