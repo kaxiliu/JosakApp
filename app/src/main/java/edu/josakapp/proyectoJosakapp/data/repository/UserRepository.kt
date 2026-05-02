@@ -137,27 +137,38 @@ class UserRepository(
     }
 
     suspend fun searchUsers(query: String): List<User> {
-        if (query.isEmpty()) return emptyList() // No buscamos si está vacío
-
         val db = FirebaseFirestore.getInstance()
-
         return try {
-            // 1. Asegúrate de que la colección sea "users" (o como se llame en tu consola)
-            // 2. Asegúrate de que el campo sea "nombre_usuario"
             val snapshot = db.collection("users")
-                .whereGreaterThanOrEqualTo("nombre_usuario", query)
-                .whereLessThanOrEqualTo("nombre_usuario", query + "\uf8ff")
+                //.whereGreaterThanOrEqualTo("nombre_usuario", query)
+                //.whereLessThanOrEqualTo("nombre_usuario", query + "\uf8ff")
                 .get()
                 .await()
 
-            val lista = snapshot.toObjects(User::class.java)
-            Log.d("BUSQUEDA_REPRO", "Encontrados: ${lista.size} para la duda: $query")
-            lista
+            Log.d("FIREBASE_TEST", "Documentos totales en la nube: ${snapshot.size()}")
+
+            snapshot.documents.mapNotNull { doc ->
+                User(
+                    uid = doc.getString("uid") ?: "",
+                    nombre_usuario = doc.getString("nombre_usuario") ?: "Sin nombre",
+                    email = doc.getString("email") ?: "",
+                    contrasena = doc.getString("contrasena") ?: "",
+                    esPremium = doc.getBoolean("esPremium") ?: false,
+                    monedas = doc.getLong("monedas")?.toInt() ?: 0,
+                    fecha_registro = doc.getLong("fecha_registro")?.toLong() ?: 0,
+                    xp_total = doc.getLong("xp_total")?.toInt() ?: 0,
+                    telefono = doc.getLong("telefono")?.toInt() ?: 0,
+                    fotoPerfil = doc.getString("fotoPerfil") ?: "",
+                    nivel = doc.getLong("nivel")?.toInt() ?: 0,
+                    puntos = doc.getLong("puntos")?.toInt() ?: 0,
+                    id_usuario = doc.getLong("id_usuario")?.toInt() ?: 0
+                )
+            }.filter { it.nombre_usuario.contains(query, ignoreCase = true) }
         } catch (e: Exception) {
-            Log.e("BUSQUEDA_REPRO", "Error: ${e.message}")
             emptyList()
         }
     }
+
     fun isUserLogged(): Boolean = authService.getCurrentUser() != null
 
     fun getUsersWithHabitos() = local.getUsersWithHabitos()
