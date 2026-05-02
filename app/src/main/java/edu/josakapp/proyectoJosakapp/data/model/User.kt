@@ -24,9 +24,23 @@ data class User(
 ){
     companion object {
         //Calcula el nivel del usuario basado en su XP total.
-        // Por ejemplo, cada 100 XP es un nivel.
         fun calculateLevel(xp: Int): Int {
-            return kotlin.math.sqrt(xp / 100.0).toInt() + 1
+            if (xp <= 0) return 1
+            val level = Math.pow((xp / 100.0), 1.0 / 1.5).toInt()
+            return if (level < 1) 1 else level
         }
+
+        // Calcula el XP requerido para alcanzar el siguiente nivel.
+        fun getRequiredXpForNextLevel(level: Int): Int {
+            return (100 * Math.pow(level.toDouble(), 1.5)).toInt()
+        }
+        // Calcula el progreso del nivel actual como un porcentaje
+        fun calculateLevelProgress(xpActual: Int, level: Int): Float {
+            val requiredXp = getRequiredXpForNextLevel(level)
+            //Evitamos división por cero
+            val currentLevelXp = xpActual % requiredXp
+            return (currentLevelXp.toFloat() / requiredXp.toFloat()).coerceIn(0f, 1f)
+        }
+
     }
 }
