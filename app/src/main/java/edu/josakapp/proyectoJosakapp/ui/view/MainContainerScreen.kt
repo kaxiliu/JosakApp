@@ -166,7 +166,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
             composable("money") {
                 MoneyScreen(
                     navController = bottomNavController,
-                    user = listOf(activeUser)
+                    userViewModel = userViewModel
                 )
             }
 

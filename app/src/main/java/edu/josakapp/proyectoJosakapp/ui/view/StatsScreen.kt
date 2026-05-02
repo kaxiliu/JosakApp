@@ -3,11 +3,14 @@ package edu.josakapp.proyectoJosakapp.ui.view
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -41,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -114,6 +119,15 @@ fun StatsScreen(navController: NavController,
 
             //Experiencia total del usuario
             item {
+                // Estado para controlar la visibilidad del diálogo de nivel
+                var showLevelDialog by remember { mutableStateOf(false) }
+
+                // Obtener nivel actual y calcular progreso basado en las funciones de la clase User
+                val currentLevel = user?.nivel ?: 1
+                val progress = User.calculateLevelProgress(xpActual, currentLevel)
+                val requiredXp = User.getRequiredXpForNextLevel(currentLevel)
+                val xpRemaining = requiredXp - (xpActual % requiredXp)
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,7 +141,7 @@ fun StatsScreen(navController: NavController,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 12.dp, horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -137,7 +151,33 @@ fun StatsScreen(navController: NavController,
                             color = Color(0xFFFFC107),
                             modifier = Modifier.padding(start = 4.dp)
                         )
+                        // Botón circular que muestra el nivel actual del usuario
+                        Surface(
+                            onClick = { showLevelDialog = true }, // Abrir diálogo al hacer clic
+                            shape = androidx.compose.foundation.shape.CircleShape,
+                            color = Color.LightGray,
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = "$currentLevel",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
                     }
+                }
+
+                // Diálogo detallado del nivel y progreso
+                if (showLevelDialog) {
+                    LevelDetailDialog(
+                        level = currentLevel,
+                        progress = progress,
+                        xpRemaining = xpRemaining.toLong(),
+                        onDismiss = { showLevelDialog = false }
+                    )
                 }
             }
             item {
@@ -295,7 +335,7 @@ fun MisionesPrincipianteCard(
     // Condición 1: Tener 3 o más hábitos
     val misionHabitosLista = habitos.size >= 3
 
-    // Condición 2: Perfil completo (Foto, nombre y teléfono no pueden estar vacíos/0)[cite: 8]
+    // Condición 2: Perfil completo (Foto, nombre y teléfono no pueden estar vacíos/0)
     val misionPerfilLista = user?.let {
         it.nombre_usuario != "Nuevo usuario" &&
                 it.fotoPerfil.isNotEmpty() &&
@@ -397,5 +437,81 @@ fun MisionRow(texto: String, estaCompletada: Boolean, recompensa: Int, onReclama
             fontWeight = FontWeight.Bold,
             fontSize = 12.sp
         )
+    }
+}
+
+/**
+ * Diálogo que muestra el nivel del usuario, el progreso actual y cuánto XP falta para el siguiente nivel.
+ */
+@Composable
+fun LevelDetailDialog(
+    level: Int,
+    progress: Float,
+    xpRemaining: Long,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Botón de cierre (X) en la esquina superior derecha
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(30.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Cerrar"
+                        )
+                    }
+                }
+
+                // Título con el nivel actual
+                Text(
+                    text = "NIVEL $level",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.DarkGray
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Barra de progreso visual
+                // Asegúrate de usar los modificadores de forma directa
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(6.dp)) // Importación necesaria
+                        .background(Color(0xFFF5F5F5)) // Importación necesaria
+                ) {
+                    // Parte llena de la barra de progreso
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progress) // Proporción dinámica basada en el progreso
+                            .fillMaxHeight()
+                            .background(Color(0xFF90EE90)) // Verde claro
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Texto informativo sobre el XP restante
+                Text(
+                    text = "Te faltan $xpRemaining XP para el nivel ${level + 1}",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
     }
 }
