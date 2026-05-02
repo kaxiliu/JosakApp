@@ -1,14 +1,19 @@
 package edu.josakapp.proyectoJosakapp.data.repository
 
+import android.util.Log
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.*
 import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 class UserRepository(
     private val local: LocalDatasource,
     private val authService: AuthService,
-    private val remote: UserRemoteRepository
+    private val remote: UserRemoteRepository,
+    private val habitoRemoteRepository: edu.josakapp.proyectoJosakapp.data.remote.HabitoRemoteRepository
 ) {
 
     suspend fun loadUser(uid: String): User {
@@ -22,8 +27,17 @@ class UserRepository(
         return if (remoteUser != null) {
 
             val localUser = remoteUser.toLocal(existingId = existingLocal?.id_usuario ?: 0)
-            local.insertUser(localUser)
-            localUser
+            val generatedId = local.insertUser(localUser)
+            // Actualizar el objeto con el ID real generado por Room si era nuevo
+            val finalUser = if (localUser.id_usuario == 0) localUser.copy(id_usuario = generatedId.toInt()) else localUser
+            
+            // Sincronizar hábitos desde Firestore a la base de datos local
+            val remoteHabitos = habitoRemoteRepository.getHabitos(uid)
+            remoteHabitos.forEach { habitoRemote ->
+                local.insertHabito(habitoRemote.toLocal(finalUser.id_usuario))
+            }
+
+            finalUser
         }
         else if (existingLocal != null) {
             existingLocal
@@ -40,13 +54,14 @@ class UserRepository(
 
             // Guardar en Room
             val localUser = newRemote.toLocal(existingId = 0)
-            local.insertUser(localUser)
-            localUser
+            val generatedId = local.insertUser(localUser)
+            localUser.copy(id_usuario = generatedId.toInt())
         }
     }
 
     suspend fun createUser(uid: String, name: String, email: String): User {
         val newUser = User(
+            uid = uid,
             nombre_usuario = name,
             email = email,
             contrasena = "",
@@ -64,9 +79,9 @@ class UserRepository(
         remote.saveUser(newUser.toRemote(uid))
 
         // Guardar en Room como User
-        local.insertUser(newUser)
+        val generatedId = local.insertUser(newUser)
 
-        return newUser
+        return newUser.copy(id_usuario = generatedId.toInt())
     }
 
     // Sincronizar un usuario local con Firestore
@@ -77,12 +92,77 @@ class UserRepository(
         }
     }
 
+    /**Funcion para la collecion social que cree en Firestore*/
+    suspend fun followUser(myId: String, targetId: String) {
+        try {
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
 
+            val relacionId = "${myId}_${targetId}"
+
+            val datos = hashMapOf(
+                "followerId" to myId,
+                "followingId" to targetId,
+                "timestamp" to FieldValue.serverTimestamp() // <--- El que te daba error
+            )
+
+            db.collection("social")
+                .document(relacionId)
+                .set(datos)
+
+            android.util.Log.d("FIREBASE_SOCIAL", "Relación creada: $relacionId")
+        } catch (e: Exception) {
+            android.util.Log.e("FIREBASE_SOCIAL", "Error al guardar relación: ${e.message}")
+        }
+    }
+    suspend fun getFollowersCount(userId: String): Int {
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        return try {
+            val query = db.collection("social")
+                .whereEqualTo("followingId", userId)
+                .get()
+                .await()
+
+            query.size()
+        } catch (e: Exception) {
+            Log.e("SOCIAL_DEBUG", "Error al contar seguidores: ${e.message}")
+            0
+        }
+    }
+    suspend fun getFollowingCount(userId: String): Int {
+        val db = FirebaseFirestore.getInstance()
+        val snapshot = db.collection("social")
+            .whereEqualTo("followerId", userId)
+            .get().await()
+        return snapshot.size()
+    }
+
+    suspend fun searchUsers(query: String): List<User> {
+        if (query.isEmpty()) return emptyList() // No buscamos si está vacío
+
+        val db = FirebaseFirestore.getInstance()
+
+        return try {
+            // 1. Asegúrate de que la colección sea "users" (o como se llame en tu consola)
+            // 2. Asegúrate de que el campo sea "nombre_usuario"
+            val snapshot = db.collection("users")
+                .whereGreaterThanOrEqualTo("nombre_usuario", query)
+                .whereLessThanOrEqualTo("nombre_usuario", query + "\uf8ff")
+                .get()
+                .await()
+
+            val lista = snapshot.toObjects(User::class.java)
+            Log.d("BUSQUEDA_REPRO", "Encontrados: ${lista.size} para la duda: $query")
+            lista
+        } catch (e: Exception) {
+            Log.e("BUSQUEDA_REPRO", "Error: ${e.message}")
+            emptyList()
+        }
+    }
     fun isUserLogged(): Boolean = authService.getCurrentUser() != null
 
     fun getUsersWithHabitos() = local.getUsersWithHabitos()
 
     suspend fun getUserById(id: Int) = local.getUserById(id)
 
-    suspend fun insertUser(user: User) = local.insertUser(user)
+    suspend fun insertUser(user: User): Long = local.insertUser(user)
 }
