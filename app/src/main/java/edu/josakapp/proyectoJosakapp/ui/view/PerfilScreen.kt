@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.R
+import edu.josakapp.proyectoJosakapp.converter.base64ToBitmap
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
 
 
@@ -112,17 +113,16 @@ fun PerfilScreen(
                 border = BorderStroke(2.dp, Color(0xFF03A9F4))
             ) {
                 AsyncImage(
-                    model = activeUser.fotoPerfil,
+                    model = activeUser.fotoPerfil?.let { base64ToBitmap(it) } ?: R.drawable.ic_person_placeholder,
                     contentDescription = "Foto de perfil",
                     placeholder = painterResource(R.drawable.ic_person_placeholder),
                     error = painterResource(R.drawable.ic_person_placeholder),
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             }
-
-            // Tres puntos arriba a la derecha
             IconButton(
                 onClick = { onNavigateToSettings() },
                 modifier = Modifier.align(Alignment.TopEnd)
