@@ -102,8 +102,6 @@ class UserViewModel (): ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                Log.d("FOTO_DEBUG", "Iniciando procesamiento para la URI: $uri")
-
                 val inputStream = context.contentResolver.openInputStream(uri)
                 val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
                 inputStream?.close()
@@ -116,33 +114,23 @@ class UserViewModel (): ViewModel() {
                     val bytes = outputStream.toByteArray()
 
                     val base64Image = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-                        .replace("\n", "")
-                        .replace("\r", "")
 
-                    val fakeUrl = "data:image/jpeg;base64,$base64Image"
-
-                    // 7. Actualizar en Firebase y en el Estado Local
                     val currentUser = _user.value
                     if (currentUser != null) {
-                        val updatedUser = currentUser.copy(fotoPerfil = fakeUrl)
+                        val updatedUser = currentUser.copy(fotoPerfil = base64Image)
 
                         userRepository.syncUserToRemote(updatedUser)
 
-                        _user.value = updatedUser
-                        launch(Dispatchers.Main) { // Volvemos al hilo principal para tocar la UI
+                        launch(Dispatchers.Main) {
                             _user.value = updatedUser
                             Log.d("FOTO_DEBUG", "¡Éxito! UI Refrescada.")
                         }
-                        Log.d("FOTO_DEBUG", "¡Éxito! Imagen convertida y guardada en Firestore.")
                     } else {
                         Log.e("FOTO_DEBUG", "Error: El usuario actual es NULL")
                     }
-                } else {
-                    Log.e("FOTO_DEBUG", "Error: No se pudo decodificar el Bitmap")
                 }
             } catch (e: Exception) {
                 Log.e("FOTO_DEBUG", "ERROR CRÍTICO: ${e.message}")
-                e.printStackTrace()
             }
         }
     }
