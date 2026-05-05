@@ -44,7 +44,7 @@ object AppModule {
             local = localDatasource,
             authService = authService,
             remote = remoteRepository,
-            //habitoRemoteRepository = habitoRemoteRepository
+            habitoRemoteRepository = habitoRemoteRepository
         )
     }
 }

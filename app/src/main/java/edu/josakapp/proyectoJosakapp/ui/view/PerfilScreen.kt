@@ -48,6 +48,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -72,12 +73,21 @@ fun PerfilScreen(
     user: User,
     userViewModel: UserViewModel,
     onNavigateToSettings: () -> Unit,
-    onCompleteProfile: () -> Unit // Nueva navegación para completar perfil
+    onCompleteProfile: () -> Unit,
+    onNavigateToSearch: () -> Unit
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val userState by userViewModel.user.collectAsState()
     val activeUser = userState ?: user
+
+    val seguidores by userViewModel.seguidoresCount.collectAsState()
+    val siguiendo by userViewModel.siguiendoCount.collectAsState()
+
+    /**Para cargar a los que se sigue y seguidores*/
+    LaunchedEffect(activeUser.id_usuario) {
+        userViewModel.loadSocialStats(activeUser.id_usuario.toString())
+    }
 
     /**Abre la galería para la foto de perfil y puede seleccionar imagen*/
     val launcher = rememberLauncherForActivityResult(
@@ -147,11 +157,11 @@ fun PerfilScreen(
                 horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("124", fontWeight = FontWeight.Bold) // Ejemplo
+                    Text("$seguidores", fontWeight = FontWeight.Bold)
                     Text("Seguidores", fontSize = 12.sp, color = Color.Gray)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("86", fontWeight = FontWeight.Bold) // Ejemplo
+                    Text("$siguiendo", fontWeight = FontWeight.Bold)
                     Text("Siguiendo", fontSize = 12.sp, color = Color.Gray)
                 }
             }
@@ -165,7 +175,7 @@ fun PerfilScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { /* Lógica añadir */ },
+                onClick = { onNavigateToSearch()},
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4))
@@ -219,8 +229,8 @@ fun PerfilScreen(
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 StatSmallCard("Rango", "${user.nivel}", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
-              //  StatSmallCard("Posición", "${user.}", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
-            /*Aqui comente posicion por que no hay ningun id, que tenga la posicion*/
+                //  StatSmallCard("Posición", "${user.}", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
+                /*Aqui comente posicion por que no hay ningun id, que tenga la posicion*/
             }
         }
 

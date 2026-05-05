@@ -29,4 +29,5 @@ sealed class NavScreens(val ruta: String) {
     object NavAmigosScreen : NavScreens("amigos")
     object NavClasificacion: NavScreens("clasificacion")
     object NavAnuncioScreen: NavScreens("Anuncio")
+    object NavBuscarAmigosSreen: NavScreens("buscar_amigos")
 }

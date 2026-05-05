@@ -122,7 +122,8 @@ fun NavigationHost(
                     user = user,
                     userViewModel = userViewModel,
                     onNavigateToSettings = { navController.navigate(NavScreens.NavAjusteScreen.ruta) },
-                    onCompleteProfile = { navController.navigate(NavScreens.NavCompletarPerfil.ruta) }
+                    onCompleteProfile = { navController.navigate(NavScreens.NavCompletarPerfil.ruta) },
+                    onNavigateToSearch = { navController.navigate(NavScreens.NavAmigosScreen.ruta)}
                 )
             } else {
                 navController.navigate(NavScreens.NavMainScreen.ruta)

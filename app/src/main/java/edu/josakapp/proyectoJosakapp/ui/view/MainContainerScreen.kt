@@ -201,9 +201,18 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
                     onNavigateToSettings = {
                         bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta)
                     },
-                    onCompleteProfile = {bottomNavController.navigate(NavScreens.NavCompletarPerfil.ruta)}
+                    onCompleteProfile = {bottomNavController.navigate(NavScreens.NavCompletarPerfil.ruta)},
+                    onNavigateToSearch = {bottomNavController.navigate(NavScreens.NavBuscarAmigosSreen.ruta)}
                 )
             }
+            composable(NavScreens.NavBuscarAmigosSreen.ruta) {
+                BuscarAmigosScreen(
+                    userViewModel = userViewModel,
+                    miId = activeUser.id_usuario.toString(),
+                    onBack = { bottomNavController.popBackStack()}
+                )
+            }
+
             composable(NavScreens.NavCompletarPerfil.ruta) {
                 CompletarPerfilScreen(
                     user = user,
