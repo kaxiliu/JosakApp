@@ -43,6 +43,8 @@ android {
 }
 dependencies {
 
+    implementation("androidx.compose.material3:material3:1.2.0")
+
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
