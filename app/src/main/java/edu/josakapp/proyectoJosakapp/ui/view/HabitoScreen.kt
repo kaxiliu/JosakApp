@@ -247,14 +247,23 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 90.dp, end = 10.dp),
 //                modifier = Modifier.fillMaxSize(),
-                message = messageForPenguin
+                message = messageForPenguin,
+                nivelSed = null
             )
         }
 
         if (showDialog) {
+            // Filtrar los registros para contar cuántas veces aparece este id_habito como completado
+            val statsCount = if (habitoSeleccionado != null) {
+                registros.count { it.id_habito == habitoSeleccionado!!.id_habito && it.completado }
+            } else {
+                0 // Si es un hábito nuevo, el contador empieza en 0
+            }
+
             AnyadirHabito(
                 userId = userId,
                 habitoInicial = habitoSeleccionado,
+                totalCompletado = statsCount, // Pasar el conteo al diálogo
                 onDismiss = {
                     showDialog = false
                     habitoSeleccionado = null

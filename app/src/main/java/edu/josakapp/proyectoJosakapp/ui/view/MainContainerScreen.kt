@@ -181,7 +181,15 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
             }
 
             composable(NavScreens.NavPinguinoScreen.ruta) {
-                Text("Pingüino Screen")
+                //Text("Pingüino Screen")
+                // Reemplazamos el Text por el componente real
+                PinguinoScreen(
+                    userViewModel = userViewModel,
+                    habitosViewModel = habitosViewModel,
+                    onBack = {
+                        bottomNavController.popBackStack()
+                    }
+                )
             }
 
             composable(NavScreens.NavAjusteScreen.ruta) {
