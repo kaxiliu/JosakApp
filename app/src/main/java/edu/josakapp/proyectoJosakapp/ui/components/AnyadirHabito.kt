@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -27,6 +28,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -50,6 +52,7 @@ import edu.josakapp.proyectoJosakapp.data.model.Habito
 fun AnyadirHabito(
     userId: Int,
     habitoInicial: Habito? = null,// Parámetro nuevo para edición
+    totalCompletado: Int = 0, //Calculado el veces que se ha completado el habito
     onDismiss: () -> Unit,
     onConfirm: (Habito) -> Unit
 ) {
@@ -81,6 +84,10 @@ fun AnyadirHabito(
             else -> 10
         }
     }
+    // Estado para mostrar/ocultar el pequeño mensaje de estadísticas
+    // (Nuevo estado para el tooltip de información)
+    var mostrarEstadisticas by remember { mutableStateOf(false) }
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -263,6 +270,42 @@ fun AnyadirHabito(
                                             selectedOption = option
                                             expanded = false
                                         }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Mostrar el icono de información solo si estamos editando
+                    // (Muestra cuántas veces se ha completado el hábito)
+                    if (habitoInicial != null) {
+                        Box(contentAlignment = Alignment.CenterEnd) {
+                            IconButton(
+                                onClick = { mostrarEstadisticas = !mostrarEstadisticas },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Estadísticas",
+                                    tint = Color(0xFF64B5F6),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            // Pequeño Tooltip/Mensaje flotante para mostrar los datos
+                            if (mostrarEstadisticas) {
+                                Surface(
+                                    modifier = Modifier
+                                        .padding(top = 30.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = Color(0xFF424242),
+                                    shadowElevation = 6.dp
+                                ) {
+                                    Text(
+                                        text = "Completado: $totalCompletado veces",
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(8.dp)
                                     )
                                 }
                             }
