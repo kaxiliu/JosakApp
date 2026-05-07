@@ -247,7 +247,8 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 90.dp, end = 10.dp),
 //                modifier = Modifier.fillMaxSize(),
-                message = messageForPenguin
+                message = messageForPenguin,
+                nivelSed = null
             )
         }
 
