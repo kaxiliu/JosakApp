@@ -11,5 +11,7 @@ data class Pinguino(
     val xp_actual: Int,
     val estado: Boolean,
     val nombre: String,
-    val id_usuario: Int
+    val id_usuario: Int,
+    val nivelSed: Float = 1.0f,
+    val ultimaVezSed: Long = System.currentTimeMillis()
 )

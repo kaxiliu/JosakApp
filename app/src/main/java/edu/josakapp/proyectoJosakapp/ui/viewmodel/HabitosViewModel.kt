@@ -204,4 +204,28 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         //Enviar la señal (broadcast) para activar  onUpdate del Widget
         getApplication<Application>().sendBroadcast(intent)
     }
+
+    //Calcular la degradación de la energía de un hábito basado en el
+    // tiempo transcurrido desde la última vez que se completó
+    fun calcularDegradacionSed(nivelActual: Float, ultimaVez: Long): Float {
+        val ahora = System.currentTimeMillis()
+        val milisegundosPorDia = 24 * 60 * 60 * 1000L
+
+        // Calcular cuántos días han pasado desde la última vez que se completó el hábito
+        val diasPasados = (ahora - ultimaVez).toFloat() / milisegundosPorDia
+
+        // Resta 0.1f por cada día que ha pasado
+        val reduccionTotal = diasPasados * 0.1f
+
+        // Calcular el nuevo nivel restando la reducción total al nivel actual
+        var nuevoNivel = nivelActual - reduccionTotal
+
+        // Si el nuevo nivel es menor que 0.2f,
+        // lo establecemos en 0.2f para evitar que baje demasiado
+        if (nuevoNivel < 0.2f) {
+            nuevoNivel = 0.2f
+        }
+
+        return nuevoNivel
+    }
 }

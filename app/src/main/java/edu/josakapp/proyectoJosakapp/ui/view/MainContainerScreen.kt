@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.ui.navigation.NavScreens
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.PinguinoViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.ThemeViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
@@ -36,6 +37,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
     //val currentUser by userViewModel.user.collectAsState()
     val currentUserState by userViewModel.user.collectAsState()
     val activeUser = currentUserState ?: user
+    val pinguinoViewModel: PinguinoViewModel = viewModel()
 
     LaunchedEffect(user.id_usuario) {
         userViewModel.loadUser(user.id_usuario)
@@ -186,6 +188,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
                 PinguinoScreen(
                     userViewModel = userViewModel,
                     habitosViewModel = habitosViewModel,
+                    pinguinoViewModel = pinguinoViewModel,
                     onBack = {
                         bottomNavController.popBackStack()
                     }

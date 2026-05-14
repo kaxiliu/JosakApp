@@ -10,22 +10,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +24,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.josakapp.proyectoJosakapp.R
+import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.ui.components.DraggablePenguin
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.HabitosViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.PinguinoViewModel
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PinguinoScreen(
     userViewModel: UserViewModel,
     habitosViewModel: HabitosViewModel,
+    pinguinoViewModel: PinguinoViewModel,
     onBack: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     // Obtenemos los datos para que el pingüino "hable"
     val listaHabitos by habitosViewModel.habitos.collectAsState()
     val registros by habitosViewModel.todosLosRegistros.collectAsState()
@@ -65,7 +59,8 @@ fun PinguinoScreen(
         habitosPendientes?.let { "¿Has hecho ${it.nombre} hoy?" } ?: "¡Todo completado! Eres genial."
     }
 
-    var nivelSed by remember { mutableFloatStateOf(0.6f) }
+    val nivelSed by pinguinoViewModel.nivelSed.collectAsState()
+
 
     // --- ESTADOS PARA LA INTERACCIÓN ---
     var showSheet by remember { mutableStateOf(false) } // Controla si el BottomSheet es visible
@@ -79,6 +74,28 @@ fun PinguinoScreen(
     val preciosBebidas = mapOf(R.drawable.bebida1 to 5, R.drawable.bebida2 to 20,
         R.drawable.bebida3 to 15,R.drawable.bebida4 to 10
     )
+
+    val mochila by pinguinoViewModel.mochila.collectAsState()
+    val userState by userViewModel.user.collectAsState()
+
+    // Al cargar la pantalla, recuperamos
+    // el estado del pingüino desde la base de datos
+    LaunchedEffect(userState) {
+        userState?.let { user ->
+            val db = AppDatabase.getInstance(context)
+            val pinguinoData = withContext(Dispatchers.IO) {
+                db.usersDAO().getPinguinoByUserId(user.id_usuario)
+            }
+
+            pinguinoData?.let {
+                //  Inicializamos el estado del pingüino con los datos recuperados de la base de datos
+                pinguinoViewModel.inicializarEstadoPinguino(
+                    nivelGuardado = it.nivelSed,
+                    ultimaFecha = it.ultimaVezSed
+                )
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -111,7 +128,6 @@ fun PinguinoScreen(
                     onDismissRequest = { menuTareasExpandido = false }
                 ) {
                     DropdownMenuItem(text = { Text("Dar de beber") }, onClick = {
-                        if(nivelSed < 1f) nivelSed += 0.1f
                         showSheet = true
                         menuTareasExpandido = false
                     })
@@ -119,10 +135,7 @@ fun PinguinoScreen(
                 }
             }
             Spacer(modifier = Modifier.width(30.dp))
-
-
         }
-
 
         DraggablePenguin(
             nivelSed = nivelSed, // Muestra la barra azul
@@ -160,6 +173,7 @@ fun PinguinoScreen(
                                 onClick = {
                                     selectedTabIndex = index
                                     itemSeleccionado = null
+                                    cantidad = 1 // Resetear cantidad al cambiar tab
                                 },
                                 text = { Text(title) }
                             )
@@ -171,9 +185,38 @@ fun PinguinoScreen(
                     // CONTENIDO
                     Box(modifier = Modifier.weight(1f)) {
                         if (selectedTabIndex == 0) {
-                            // MOCHILA principalmente vacía, pero con mensaje
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(text = "Mochila vacía", color = Color.Gray)
+                            // --- MOCHILA DINÁMICA ---
+                            if (mochila.isEmpty()) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text(text = "Mochila vacía", color = Color.Gray)
+                                }
+                            } else {
+                                LazyColumn(
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    // Obtenemos solo los IDs de los items que realmente tenemos en la mochila
+                                    val itemsEnMochila = mochila.keys.toList().chunked(3)
+                                    items(itemsEnMochila) { fila ->
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            fila.forEach { resId ->
+                                                ItemBebidaUI(
+                                                    resId = resId,
+                                                    esTienda = false,
+                                                    estaSeleccionado = itemSeleccionado == resId,
+                                                    cantidadPoseida = mochila[resId] ?: 0,
+                                                    onSelect = { itemSeleccionado = resId }
+                                                )
+                                            }
+                                            repeat(3 - fila.size) {
+                                                Spacer(modifier = Modifier.weight(1f))
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         } else {
                             // --- TIENDA CON REJILLA FIJA ---
@@ -188,7 +231,7 @@ fun PinguinoScreen(
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         fila.forEach { resId ->
-                                            // Obtenemos el precio del mapa, si no existe ponemos 0 por defecto
+                                            // Recuperamos el precio del mapa para mostrarlo
                                             val precio = preciosBebidas[resId] ?: 0
 
                                             ItemBebidaUI(
@@ -196,6 +239,7 @@ fun PinguinoScreen(
                                                 esTienda = true,
                                                 estaSeleccionado = itemSeleccionado == resId,
                                                 precio = precio,
+                                                cantidadPoseida = mochila[resId] ?: 0,
                                                 onSelect = { itemSeleccionado = resId }
                                             )
                                         }
@@ -215,7 +259,55 @@ fun PinguinoScreen(
                             esTienda = selectedTabIndex == 1,
                             cantidad = cantidad,
                             onCantidadChange = { cantidad = it },
-                            onConfirm = { showSheet = false }
+                            onConfirm = {
+                                val resId = itemSeleccionado!!
+                                val currentUserId = userState?.id_usuario?: 0
+
+                                if (selectedTabIndex == 1) {
+                                    //Calculamos el costo total de la compra
+                                    val precioUnitario = preciosBebidas[resId] ?: 0
+                                    val costoTotal = precioUnitario * cantidad
+                                    val monedasActuales = userState?.monedas ?: 0
+
+                                    if (monedasActuales >= costoTotal) {
+                                        userViewModel.updateMonedas(-costoTotal) //Si el usuario tiene suficiente dinero, procedemos con la compra
+                                        pinguinoViewModel.comprarBebida(resId, cantidad)//Agregamos las bebidas compradas a la mochila del pingüino
+
+                                        android.widget.Toast.makeText(
+                                            context,
+                                            "¡Compra exitosa!",
+                                            android.widget.Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        // Reseteamos la selección y cantidad para la próxima compra
+                                        itemSeleccionado = null
+                                        cantidad = 1
+
+                                    } else {
+                                        // Si el usuario no tiene suficiente dinero, mostramos un mensaje de error
+                                        android.widget.Toast.makeText(
+                                            context,
+                                            "No tienes suficientes monedas.",
+                                            android.widget.Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } else {
+                                    // Verificamos que tengamos suficiente cantidad en la mochila antes de alimentar
+                                    val cantidadDisponible = mochila[resId] ?: 0
+                                    if (cantidadDisponible >= cantidad) {
+                                        // Si estamos en la mochila, usamos la bebida seleccionada para alimentar al pingüino
+                                        pinguinoViewModel.usarBebida(resId, cantidad,currentUserId)
+                                        itemSeleccionado = null
+                                        showSheet = false
+                                    } else {
+                                        android.widget.Toast.makeText(
+                                            context,
+                                            "No tienes suficientes bebidas.",
+                                            android.widget.Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
                         )
                     }
                 }
@@ -233,6 +325,7 @@ fun RowScope.ItemBebidaUI(
     esTienda: Boolean,
     estaSeleccionado: Boolean,
     precio: Int = 0,
+    cantidadPoseida: Int = 0,
     onSelect: () -> Unit
 ) {
     Column(
@@ -264,7 +357,8 @@ fun RowScope.ItemBebidaUI(
                 color = Color(0xFFFFA500)
             )
         } else {
-            Text(text = "Poseído: 0", fontSize = 10.sp, color = Color.Gray)
+            // Muestra la cantidad que posees en la mochila
+            Text(text = "x$cantidadPoseida", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
         }
     }
 }

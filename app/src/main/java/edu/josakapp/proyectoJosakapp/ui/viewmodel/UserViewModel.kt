@@ -240,6 +240,12 @@ class UserViewModel (): ViewModel() {
         }
     }
 
+    //Actualizar monedas caundo compra en la tienda o reclame recompensas
+    fun updateMonedas(cantidad: Int) {
+        val userId = _user.value?.id_usuario ?: return
+        anyadirMonedas(userId, cantidad)
+    }
+
     // Para el check-in diario, guardamos la última fecha y la racha actual en SharedPreferences
     fun obtenerEstadoCheckIn(context: Context): Pair<Int, Boolean> {
         val prefs = context.getSharedPreferences("checkin_prefs", Context.MODE_PRIVATE)
