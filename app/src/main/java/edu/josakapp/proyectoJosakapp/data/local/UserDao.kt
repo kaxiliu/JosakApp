@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import edu.josakapp.proyectoJosakapp.data.model.Pinguino
 import edu.josakapp.proyectoJosakapp.data.model.User
 import edu.josakapp.proyectoJosakapp.data.model.UserWithHabito
 import kotlinx.coroutines.flow.Flow
@@ -37,5 +38,12 @@ interface UserDao {
     @Query("UPDATE user SET xp_total = :xp, nivel = :level, puntos = :puntos WHERE id_usuario = :userId")
     suspend fun updateUserXpLevelAndPuntos(userId: Int, xp: Int, level: Int, puntos: Int)
 
+    //Obtiene el pingüino asociado a un usuario por su ID de usuario
+    @Query("SELECT * FROM pinguino WHERE id_usuario = :userId LIMIT 1")
+    suspend fun getPinguinoByUserId(userId: Int): Pinguino?
+
+    // Inserta o actualiza un pingüino asociado a un usuario
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPinguino(pinguino: Pinguino)
 
 }

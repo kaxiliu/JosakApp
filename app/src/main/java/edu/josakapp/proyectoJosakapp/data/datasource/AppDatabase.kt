@@ -10,6 +10,7 @@ import edu.josakapp.proyectoJosakapp.data.local.UserDao
 import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
+import edu.josakapp.proyectoJosakapp.data.model.Pinguino
 import edu.josakapp.proyectoJosakapp.data.model.User
 
 @Database(
@@ -17,9 +18,10 @@ import edu.josakapp.proyectoJosakapp.data.model.User
         Habito::class,
         User::class,
         Amigo::class,
-        HabitoRegistro::class
+        HabitoRegistro::class,
+        Pinguino::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
