@@ -5,11 +5,14 @@ import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import android.app.Application
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import edu.josakapp.proyectoJosakapp.data.di.AppModule
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
+import edu.josakapp.proyectoJosakapp.data.model.Accesorios
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -36,6 +39,23 @@ class PinguinoViewModel(application: Application) : AndroidViewModel(application
     // donde se almacenan las bebidas compradas por el usuario
     private val _mochila = MutableStateFlow<Map<Int, Int>>(emptyMap())
     val mochila = _mochila.asStateFlow()
+
+    val tiendaDeRopa = listOf(
+        Accesorios(id_accesorio = 1,nombre = "Pirata",descripcion = "Sombrero de pirata",imagen = "pirata",precio = 10f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 2, nombre = "Árbol", descripcion = "Sombrero de árbol", imagen = "arbol", precio = 30f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 3, nombre = "Magia", descripcion = "Sombrero mágico", imagen = "magia", precio = 30f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 4, nombre = "Mushroom", descripcion = "Sombrero de hongo", imagen = "mushroom", precio = 30f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 5, nombre = "Fresa", descripcion = "Sombrero de fresa", imagen = "fresa", precio = 30f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 6, nombre = "Calabaza", descripcion = "Sombrero de calabaza", imagen = "calabaza", precio = 40f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 7, nombre = "Flores", descripcion = "Sombrero de flores", imagen = "flores", precio = 50f,tipo = true, id_pinguino = 0),
+        Accesorios(id_accesorio = 8, nombre = "Navidad", descripcion = "Sombrero navideño", imagen = "navidad", precio = 60f,tipo = true, id_pinguino = 0)
+    )
+
+    private val _mochilaRopa = MutableStateFlow<Map<Int, Boolean>>(emptyMap())
+    val mochilaRopa = _mochilaRopa.asStateFlow()
+
+    private val _ropaEquipadaRes = MutableStateFlow<Int?>(null)
+    val ropaEquipadaRes = _ropaEquipadaRes.asStateFlow()
 
     // Función para inicializar el estado del pingüino al cargar la app,
     // calculando la pérdida de sed en función del tiempo transcurrido desde la última sesión
