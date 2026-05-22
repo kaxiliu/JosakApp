@@ -9,12 +9,13 @@ import androidx.room.Relation
 data class PinguinoWithAccesorios(
     @Embedded val pinguino: Pinguino,
     @Relation(
-        parentColumn = "id_pinguino",
+        parentColumn = "idPinguino",
         entityColumn = "id_accesorio",
-        /**Aqui añadimos la nueva relación en la cual
-         * se sabrá que accesorio porta el pinguino pero
-         * solo de 1*/
-        associateBy = Junction(PinguinoAccesoriosCrossRef::class)
+        associateBy = Junction(
+            value = PinguinoAccesoriosCrossRef::class,
+            parentColumn = "idPinguino",
+            entityColumn = "id_accesorio"
+        )
     )
     val accesorios: List<Accesorios>
 )

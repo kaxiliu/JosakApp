@@ -3,13 +3,17 @@ package edu.josakapp.proyectoJosakapp.data.local
 import edu.josakapp.proyectoJosakapp.data.model.Amigo
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
+import edu.josakapp.proyectoJosakapp.data.model.Pinguino
+import edu.josakapp.proyectoJosakapp.data.model.PinguinoAccesoriosCrossRef
+import edu.josakapp.proyectoJosakapp.data.model.PinguinoWithAccesorios
 import edu.josakapp.proyectoJosakapp.data.model.User
 import kotlinx.coroutines.flow.Flow
 
 class LocalDatasource(
     private val userDao: UserDao,
     private val habitosDao: HabitosDao,
-    private val amigosDao: AmigosDao   // ✅ AÑADIDO
+    private val amigosDao: AmigosDao,
+    private val pinguinoDao: PinguinoDao
 ) {
 
     val currenthabitos: Flow<List<Habito>> = habitosDao.getAllHabitos()
@@ -80,11 +84,17 @@ class LocalDatasource(
 
 
     // -------------------------
-    // AMIGOS DAO  ✅ NUEVO
+    // AMIGOS DAO
     // -------------------------
 
     fun getAmigos() = amigosDao.getAmigos()
 
     suspend fun insertAmigo(nombre: String) =
         amigosDao.insertAmigo(Amigo(nombre))
+
+    //Pinguino DAO
+    suspend fun getPinguinoByUserId(userId: Int): Pinguino? = pinguinoDao.getPinguinoByUserId(userId)
+    suspend fun insertPinguino(pinguino: Pinguino) = pinguinoDao.insertPinguino(pinguino)
+    suspend fun insertPinguinoAccesorio(crossRef: PinguinoAccesoriosCrossRef) = pinguinoDao.insertPinguinoAccesorio(crossRef)
+    suspend fun getPinguinoWithAccesorios(userId: Int): PinguinoWithAccesorios? = pinguinoDao.getPinguinoWithAccesorios(userId)
 }

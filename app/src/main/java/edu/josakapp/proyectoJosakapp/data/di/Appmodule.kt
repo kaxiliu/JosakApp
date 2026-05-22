@@ -5,6 +5,7 @@ import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
+import edu.josakapp.proyectoJosakapp.data.repository.PinguinoRepository
 import edu.josakapp.proyectoJosakapp.data.repository.UserRepository
 
 object AppModule {
@@ -46,5 +47,9 @@ object AppModule {
             remote = remoteRepository,
             habitoRemoteRepository = habitoRemoteRepository
         )
+    }
+
+    val pinguinoRepository: PinguinoRepository by lazy {
+        PinguinoRepository(database.pinguinoDAO())
     }
 }
