@@ -38,12 +38,4 @@ interface UserDao {
     @Query("UPDATE user SET xp_total = :xp, nivel = :level, puntos = :puntos WHERE id_usuario = :userId")
     suspend fun updateUserXpLevelAndPuntos(userId: Int, xp: Int, level: Int, puntos: Int)
 
-    //Obtiene el pingüino asociado a un usuario por su ID de usuario
-    @Query("SELECT * FROM pinguino WHERE id_usuario = :userId LIMIT 1")
-    suspend fun getPinguinoByUserId(userId: Int): Pinguino?
-
-    // Inserta o actualiza un pingüino asociado a un usuario
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPinguino(pinguino: Pinguino)
-
 }

@@ -54,21 +54,24 @@ fun RowScope.ItemUI(
     esTienda: Boolean,
     estaSeleccionado: Boolean,
     precio: Int = 0,
-    cantidadPoseida: Int = 0, // Solo se muestra en la mochila de Bebidas
-    textoEstado: String? = null, // Solo se muestra en la mochila de Ropa
+    cantidadPoseida: Int = 0,
+    textoEstado: String? = null,
+    deshabilitado: Boolean = false,
     onSelect: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .weight(1f)
             .padding(4.dp)
-            .clickable { onSelect() }
+            // Si está deshabilitado (ya comprado), no responde al click
+            .clickable(enabled = !deshabilitado) { onSelect() }
             .border(
                 width = if (estaSeleccionado) 4.dp else 1.dp,
                 color = if (estaSeleccionado) Color(0xFFFFA500) else Color.LightGray.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            //  Si ya está comprado, se muestra con un tono gris opaco
+            .background(if(deshabilitado) Color.LightGray.copy(alpha = 0.5f) else Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -79,7 +82,6 @@ fun RowScope.ItemUI(
         )
 
         if (esTienda) {
-            // Muestra el precio específico de cada bebida
             Text(
                 text = "🪙 $precio",
                 fontSize = 12.sp,
@@ -114,7 +116,6 @@ fun ActionPanel(esTienda: Boolean, cantidad: Int, onCantidadChange: (Int) -> Uni
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Selector de cantidad: - [X] +
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { if (cantidad > 1) onCantidadChange(cantidad - 1) }) {
                 Text("-", fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -154,7 +155,6 @@ fun MochilaBebidasGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        // Obtenemos solo los IDs de los items que realmente tenemos en la mochila y los agrupamos de 3 en 3
         val itemsEnMochila = mochila.keys.toList().chunked(3)
         items(itemsEnMochila) { fila ->
             Row(
@@ -178,7 +178,6 @@ fun MochilaBebidasGrid(
     }
 }
 
-
 @Composable
 fun TiendaBebidasGrid(
     listaBebidas: List<Int>,
@@ -198,7 +197,6 @@ fun TiendaBebidasGrid(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 fila.forEach { resId ->
-                    // Recuperamos el precio del mapa para mostrarlo
                     val precio = preciosBebidas[resId] ?: 0
 
                     ItemUI(
@@ -210,7 +208,6 @@ fun TiendaBebidasGrid(
                         onSelect = { onItemSelected(resId) }
                     )
                 }
-                // Espaciadores para mantener el tamaño del grid si la fila no está llena
                 repeat(3 - fila.size) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
@@ -222,7 +219,7 @@ fun TiendaBebidasGrid(
 @Composable
 fun TiendaRopaGrid(
     tiendaDeRopa: List<Accesorios>,
-    mochilaRopa: Map<Int, Boolean>,
+    mochilaRopa: Map<String, Boolean>,
     itemRopaSeleccionado: Int?,
     onItemSelected: (Int) -> Unit
 ) {
@@ -230,7 +227,6 @@ fun TiendaRopaGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        // 3 items por fila, así que dividimos la lista en sublistas de 3
         val filas = tiendaDeRopa.chunked(3)
         items(filas) { fila ->
             Row(
@@ -238,20 +234,18 @@ fun TiendaRopaGrid(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 fila.forEach { accesorio ->
-                    // Buscamos el ID del recurso drawable
                     val resId = obtenerDrawableId(accesorio.imagen)
-                    val yaComprado = mochilaRopa.containsKey(resId)
+                    val yaComprado = mochilaRopa.containsKey(accesorio.imagen)
 
-                    // usamos el mismo componente de bebida pero adaptado para ropa,
-                    // mostrando el precio y si ya lo tenemos comprado
+                    // Pasamos yaComprado al deshabilitado para congelar los clicks por completo
                     ItemUI(
                         resId = resId,
                         esTienda = !yaComprado,
                         estaSeleccionado = itemRopaSeleccionado == resId,
-                        precio = accesorio.precio.toInt(), // Mostramos el precio del accesorio
+                        precio = accesorio.precio.toInt(),
                         cantidadPoseida = if (yaComprado) 1 else 0,
-                        // Solo permitimos seleccionar el item si no lo hemos comprado aún, para evitar confusiones
-                        onSelect = { if (!yaComprado) onItemSelected(resId) }
+                        deshabilitado = yaComprado,
+                        onSelect = { onItemSelected(resId) }
                     )
                 }
                 repeat(3 - fila.size) { Spacer(modifier = Modifier.weight(1f)) }
@@ -262,7 +256,7 @@ fun TiendaRopaGrid(
 
 @Composable
 fun MochilaRopaGrid(
-    mochilaRopa: Map<Int, Boolean>,
+    mochilaRopa: Map<String, Boolean>,
     ropaEquipadaRes: Int?,
     itemRopaSeleccionado: Int?,
     onItemSelected: (Int) -> Unit
@@ -277,7 +271,8 @@ fun MochilaRopaGrid(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                fila.forEach { resId ->
+                fila.forEach { imagenNombre ->
+                    val resId = obtenerDrawableId(imagenNombre)
                     ItemUI(
                         resId = resId,
                         esTienda = false,
@@ -291,13 +286,14 @@ fun MochilaRopaGrid(
         }
     }
 }
+
 @Composable
 fun BaseBottomSheetContent(
     selectedTabIndex: Int,
     titulosTabs: List<String>,
     onTabSelected: (Int) -> Unit,
     onCloseClick: () -> Unit,
-    content: @Composable BoxScope.() -> Unit // Permite inyectar contenido específico para cada pestaña dentro de la misma estructura de diseño
+    content: @Composable BoxScope.() -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -305,7 +301,6 @@ fun BaseBottomSheetContent(
             .fillMaxHeight(0.7f)
             .padding(16.dp)
     ) {
-        // Boton de cerrar
         Box(modifier = Modifier.fillMaxWidth()) {
             IconButton(
                 onClick = onCloseClick,
@@ -315,7 +310,6 @@ fun BaseBottomSheetContent(
             }
         }
 
-        // Tabs para cambiar entre tienda de bebidas, mochila y tienda de ropa
         TabRow(selectedTabIndex = selectedTabIndex, containerColor = Color.Transparent) {
             titulosTabs.forEachIndexed { index, title ->
                 Tab(
@@ -328,7 +322,6 @@ fun BaseBottomSheetContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Contenido específico de cada pestaña (grid de bebidas/ ropa)
         Box(
             modifier = Modifier.weight(1f),
             content = content
@@ -336,7 +329,6 @@ fun BaseBottomSheetContent(
     }
 }
 
-//Buscar el recurso drawable por su nombre para mostrar la imagen correspondiente en la UI
 @Composable
 fun obtenerDrawableId(nombreImagen: String): Int {
     val context = LocalContext.current
