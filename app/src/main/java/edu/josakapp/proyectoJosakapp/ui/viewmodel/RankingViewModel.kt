@@ -30,7 +30,8 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
         localDatasource = LocalDatasource(
             database.usersDAO(),
             database.habitosDAO(),
-            database.amigosDAO()
+            database.amigosDAO(),
+            database.pinguinoDAO()
         )
 
         viewModelScope.launch {

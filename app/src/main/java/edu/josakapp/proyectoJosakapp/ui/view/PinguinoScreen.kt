@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import edu.josakapp.proyectoJosakapp.R
-import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
+import edu.josakapp.proyectoJosakapp.data.di.AppModule.pinguinoRepository
 import edu.josakapp.proyectoJosakapp.ui.components.ActionPanel
 import edu.josakapp.proyectoJosakapp.ui.components.BaseBottomSheetContent
 import edu.josakapp.proyectoJosakapp.ui.components.DraggablePenguin
@@ -84,24 +84,31 @@ fun PinguinoScreen(
     var itemRopaSeleccionado by remember { mutableStateOf<Int?>(null) }// Guarda el índice del item de ropa clicado
     var selectedRopaTabIndex by remember { mutableIntStateOf(0) }// 0: Mochila, 1: Tienda
     val titulosRopaTabs = listOf("Mochila", "Tienda")
-    var mochilaRopa by remember { mutableStateOf(mapOf<Int, Boolean>()) }//Datos de la ropa que el pingüino tiene en su mochila
+    val mochilaRopa by pinguinoViewModel.mochilaRopa.collectAsState()
+    val ropaEquipadaRes by pinguinoViewModel.ropaEquipadaRes.collectAsState()
 
 
-    // Al cargar la pantalla, recuperamos
-    // el estado del pingüino desde la base de datos
-    LaunchedEffect(userState) {
-        userState?.let { user ->
-            val db = AppDatabase.getInstance(context)
-            val pinguinoData = withContext(Dispatchers.IO) {
-                db.usersDAO().getPinguinoByUserId(user.id_usuario)
-            }
+    val userId = userState?.id_usuario //Utilizamos el ID del usuario para cargar la ropa comprada y el estado del pingüino. Si userState es null
 
-            pinguinoData?.let {
-                //  Inicializamos el estado del pingüino con los datos recuperados de la base de datos
-                pinguinoViewModel.inicializarEstadoPinguino(
-                    nivelGuardado = it.nivelSed,
-                    ultimaFecha = it.ultimaVezSed
-                )
+    //LaunchedEffect se ejecutará cada vez que userId cambie,
+    // lo que es útil para cargar los datos del pingüino cuando el usuario inicia sesión o cambia.
+    LaunchedEffect(userId) {
+        if (userId != null && userId != 0) {
+            // Cargar la ropa comprada
+            pinguinoViewModel.cargarRopaComprada(userId)
+
+            // Cargar el estado del pingüino
+            withContext(Dispatchers.IO) {
+                val pinguinoData = pinguinoRepository.getPinguino(userId)
+
+                withContext(Dispatchers.Main) {
+                    pinguinoData?.let {
+                        pinguinoViewModel.inicializarEstadoPinguino(
+                            nivelGuardado = it.nivelSed,
+                            ultimaFecha = it.ultimaVezSed
+                        )
+                    }
+                }
             }
         }
     }
@@ -208,11 +215,9 @@ fun PinguinoScreen(
                                 val monedasActuales = userState?.monedas ?: 0
 
                                 if (monedasActuales >= costoTotal) {
+                                    pinguinoViewModel.comprarBebida(resId, cantidad)
                                     userViewModel.updateMonedas(-costoTotal) //Si el usuario tiene suficiente dinero, procedemos con la compra
-                                    pinguinoViewModel.comprarBebida(
-                                        resId,
-                                        cantidad
-                                    )//Agregamos las bebidas compradas a la mochila del pingüino
+
 
                                     Toast.makeText(
                                         context,
@@ -221,7 +226,6 @@ fun PinguinoScreen(
                                     ).show()
 
                                     // Reseteamos la selección y cantidad para la próxima compra
-                                    itemSeleccionado = null
                                     cantidad = 1
 
                                 } else {
@@ -268,30 +272,37 @@ fun PinguinoScreen(
                     onCloseClick = { showRopaSheet = false }
                 ) {
                     if (selectedRopaTabIndex == 0) {
-                        val ropaEquipadaRes = null
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                        if (mochilaRopa.isEmpty()) {
-                            Text(
-                                text = "Mochila vacía",
-                                color = Color.Gray,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        } else {
-                            MochilaRopaGrid(
-                                mochilaRopa,
-                                ropaEquipadaRes,
-                                itemRopaSeleccionado,
-                                { itemRopaSeleccionado = it })
-                        }
+                            if (mochilaRopa.isEmpty()) {
+                                Text(
+                                    text = "Mochila vacía",
+                                    color = Color.Gray,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            } else {
+                                MochilaRopaGrid(
+                                    mochilaRopa,
+                                    ropaEquipadaRes,
+                                    itemRopaSeleccionado,
+                                    { itemRopaSeleccionado = it })
                             }
+                        }
                     } else {
                         TiendaRopaGrid(
                             pinguinoViewModel.tiendaDeRopa,
                             mochilaRopa,
                             itemRopaSeleccionado,
-                            { itemRopaSeleccionado = it })
+                            onItemSelected = { resId ->
+                                val accesorioNombre = pinguinoViewModel.tiendaDeRopa.find { acc ->
+                                    context.resources.getIdentifier(acc.imagen, "drawable", context.packageName) == resId
+                                }?.imagen
+                                if (accesorioNombre == null || !mochilaRopa.containsKey(accesorioNombre)) {
+                                    itemRopaSeleccionado = resId
+                                }
+                            }
+                        )
                     }
                 }
 
@@ -302,33 +313,47 @@ fun PinguinoScreen(
 
                     Button(
                         onClick = {
+                            val currentUserId = userState?.id_usuario ?: 0
                             if (esTiendaRopa) {
                                 // Si estamos en la tienda, intentamos comprar el accesorio seleccionado
                                 val clickedAccesorio = pinguinoViewModel.tiendaDeRopa.find { accesorio ->
-                                    val resId = context.resources.getIdentifier(
+                                    val targetResId = context.resources.getIdentifier(
                                         accesorio.imagen,
                                         "drawable",
                                         context.packageName
                                     )
-                                    resId == itemRopaSeleccionado
+                                    // REPARADO: Se asegura una validación no nula y exacta con el recurso actual
+                                    targetResId != 0 && targetResId == itemRopaSeleccionado
                                 }
-                                val precio = clickedAccesorio?.precio?.toInt() ?: 0
-                                val monedasActuales = userState?.monedas ?: 0
 
-                                if (monedasActuales >= precio) {
-                                    userViewModel.updateMonedas(-precio)
-                                    mochilaRopa = mochilaRopa + (itemRopaSeleccionado!! to true)
-                                    Toast.makeText(context, "¡Compra exitosa!", Toast.LENGTH_SHORT).show()
-                                    itemRopaSeleccionado = null
+                                if (clickedAccesorio != null) {
+                                    val precio = clickedAccesorio.precio.toInt()
+                                    val monedasActuales = userState?.monedas ?: 0
+
+                                    if (monedasActuales >= precio) {
+                                        // REPARADO: Primero guardamos el estado en el ViewModel antes de restar monedas para mantener el flujo de recomposición sincronizado
+                                        pinguinoViewModel.comprarRopa(
+                                            resId = itemRopaSeleccionado!!,
+                                            accesorio = clickedAccesorio,
+                                            userId = currentUserId
+                                        )
+                                        userViewModel.updateMonedas(-precio)
+                                        Toast.makeText(context, "¡Compra exitosa!", Toast.LENGTH_SHORT).show()
+                                        itemRopaSeleccionado = null
+                                    } else {
+                                        Toast.makeText(context, "No tienes suficientes monedas.", Toast.LENGTH_SHORT).show()
+                                    }
                                 } else {
-                                    Toast.makeText(context, "No tienes suficientes monedas.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Error al identificar el accesorio.", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
                                 val currentUserId = userState?.id_usuario ?: 0
-                                //FALTA: Aquí deberíamos actualizar el estado del pingüino para equipar la ropa seleccionada, lo que podría implicar una función en el ViewModel que marque esa ropa como equipada y posiblemente afecte la apariencia del pingüino
 
-                                Toast.makeText(context, "¡Ropa cambiada!", Toast.LENGTH_SHORT).show()
+                                itemRopaSeleccionado?.let { resId ->
+                                    pinguinoViewModel.equiparRopa(resId)
 
+                                    Toast.makeText(context, "¡Ropa cambiada!", Toast.LENGTH_SHORT).show()
+                                }
                                 // Si estamos en la mochila, equipamos la ropa seleccionada
                                 itemRopaSeleccionado = null
                                 showRopaSheet = false

@@ -24,7 +24,8 @@ object AppModule {
         LocalDatasource(
             database.usersDAO(),
             database.habitosDAO(),
-            database.amigosDAO()
+            database.amigosDAO(),
+            database.pinguinoDAO()
         )
     }
 
