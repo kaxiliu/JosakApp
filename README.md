@@ -60,7 +60,8 @@ A continuación se detalla la organización exacta de los paquetes y archivos cl
  │    │    ├── 📄 AmigosDao.kt                 # Consultas Room para el sistema de amigos
  │    │    ├── 📄 HabitosDao.kt                # Consultas Room para la gestión de hábitos
  │    │    ├── 📄 LocalDatasource.kt            # Origen de datos local encapsulado
- │    │    └── 📄 UserDao.kt                   # Consultas de persistencia de usuario y pingüino
+ │    │    ├── 📄 UserDao.kt                   # Consultas de persistencia de usuario y pingüino
+ │    │    └── 📄 PinguinoDao.kt              # Consultas Room para el pingüino
  │    │
  │    ├── 📂 model
     │    ├── 📄 Accesorios.kt                # Entidad que define el catálogo de ropa, precios e imágenes
@@ -100,7 +101,8 @@ A continuación se detalla la organización exacta de los paquetes y archivos cl
  ├── 📂 repository
  │    ├── 📄 HabitosRepository.kt              # Mediador definitivo para el flujo de hábitos
  │    ├── 📄 RankingRepository.kt              # Mediador para la tabla de líderes
- │    └── 📄 UserRepository.kt                 # Mediador para los datos globales de usuario
+ │    ├── 📄 UserRepository.kt                 # Mediador para los datos globales de usuario
+ │    └── 📄 PinguinoRepository.kt              # Mediador para los datos globales de pinguino
  │
  └── 📂 ui
       ├── 📂 components
@@ -112,11 +114,7 @@ A continuación se detalla la organización exacta de los paquetes y archivos cl
       │    ├── 📄 HabitoWidget.kt              # Widget de escritorio o acceso rápido optimizado para el control del estado del día
       │    ├── 📄 LoginComponents.kt           # Conjunto de campos de texto y validaciones de entrada reutilizables para el inicio de sesión
       │    ├── 📄 LoginContent.kt              # Estructura del formulario central y disposición visual de la pantalla de autenticación
-      │    ├── 📄 PinguinoComponents.kt        # Módulos de UI independientes y optimizados para los paneles interactivos del juego:
-      │    │                                     - ItemBebidaUI: Cuadrícula con bordes dinámicos según selección.
-      │    │                                     - ActionPanel: Control numérico e interruptores inteligentes para Comprar/Alimentar.
-      │    │                                     - MochilaBebidasGrid / TiendaBebidasGrid: Listas optimizadas en 3 columnas.
-      │    │                                     - MochilaRopaGrid / TiendaRopaGrid: Gestión del armario dinámico y extracción de nombres de los artículos.
+      │    ├── 📄 PinguinoComponents.kt        # Módulos de UI independientes y optimizados para los paneles interactivos del juego
       │    └── 📄 SettingsScaffold.kt          # Plantilla estructural y maquetación de la interfaz para el menú de configuraciones generales
       │
       ├── 📂 navigation
