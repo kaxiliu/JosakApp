@@ -14,18 +14,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.UserRanking
 import edu.josakapp.proyectoJosakapp.ui.viewmodel.RankingViewModel
+import edu.josakapp.proyectoJosakapp.ui.viewmodel.UserViewModel
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import edu.josakapp.proyectoJosakapp.converter.base64ToBitmap
 
 @Composable
-fun RankingScreen(viewModel: RankingViewModel) {
+fun RankingScreen(viewModel: RankingViewModel, userViewModel: UserViewModel, navController: NavHostController) {
 
     val ranking by viewModel.ranking.collectAsState()
     val soloAmigos by viewModel.soloAmigos.collectAsState()
+    val userState by userViewModel.user.collectAsState()
+    val currentName = userState?.nombre_usuario ?: ""
+
+    var query by remember { mutableStateOf("") }
 
     // Cargar ranking al entrar
     LaunchedEffect(Unit) {
@@ -64,30 +79,59 @@ fun RankingScreen(viewModel: RankingViewModel) {
                 color = Color.White
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Toggle Global / Amigos
-            Text(
-                text = if (soloAmigos) "Ver ranking global" else "Ver ranking de amigos",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clickable { viewModel.toggleRanking() }
-                    .padding(8.dp)
-            )
+            // Top actions: toggle friends + refresh + search
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = if (soloAmigos) "Ver ranking global" else "Ver ranking de amigos",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .clickable { viewModel.toggleRanking() }
+                        .padding(8.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { viewModel.loadRanking() }) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refrescar")
+                }
+            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Lista del ranking
+            OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Buscar usuario") })
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Mostrar posición del usuario actual si existe
+            val currentIndex = ranking.indexOfFirst { it.nombre_usuario == currentName }
+            if (currentIndex >= 0) {
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("Tu posición: #${currentIndex + 1}", fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 12.dp))
+                        Text("${ranking[currentIndex].puntos} pts · Nivel ${ranking[currentIndex].nivel}")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Lista del ranking (filtrada por búsqueda)
+            val filtered = if (query.isBlank()) ranking else ranking.filter { it.nombre_usuario.contains(query, ignoreCase = true) }
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                itemsIndexed(ranking) { index, user ->
+                itemsIndexed(filtered) { index, user ->
+                    val originalIndex = ranking.indexOfFirst { it.nombre_usuario == user.nombre_usuario }
+                    val isCurrent = user.nombre_usuario == currentName
                     RankingItem(
                         user = user,
-                        position = index + 1,
-                        onAddFriend = { viewModel.addFriend(user.nombre_usuario) }
+                        position = originalIndex + 1,
+                        isCurrent = isCurrent,
+                        onAddFriend = { /* deprecated */ },
+                        onOpenProfile = {
+                            // navegar a la pantalla de perfil del usuario
+                            navController.navigate("perfil_user/${user.id_usuario}")
+                        }
                     )
                 }
             }
@@ -96,7 +140,7 @@ fun RankingScreen(viewModel: RankingViewModel) {
 }
 
 @Composable
-fun RankingItem(user: UserRanking, position: Int, onAddFriend: () -> Unit) {
+fun RankingItem(user: UserRanking, position: Int, isCurrent: Boolean = false, onAddFriend: () -> Unit, onOpenProfile: () -> Unit) {
 
     // Colores según posición
     val backgroundColor = when (position) {
@@ -119,7 +163,7 @@ fun RankingItem(user: UserRanking, position: Int, onAddFriend: () -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
+            containerColor = if (isCurrent) Color(0xFF90EE90).copy(alpha = 0.95f) else backgroundColor
         )
     ) {
         Row(
@@ -137,13 +181,25 @@ fun RankingItem(user: UserRanking, position: Int, onAddFriend: () -> Unit) {
             )
 
             // FOTO DE PERFIL
-            Image(
-                painter = rememberAsyncImagePainter(user.fotoPerfil),
-                contentDescription = "Foto perfil",
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(end = 12.dp)
-            )
+            val bitmap = remember(user.fotoPerfil) { user.fotoPerfil.takeIf { it.isNotBlank() }?.let { base64ToBitmap(it) } }
+            if (bitmap != null) {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Foto perfil",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .padding(end = 12.dp)
+                )
+            } else {
+                AsyncImage(
+                    model = R.drawable.ic_person_placeholder,
+                    contentDescription = "Foto perfil",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(end = 12.dp)
+                )
+            }
 
             // NOMBRE + PUNTOS + NIVEL
             Column(
@@ -161,13 +217,13 @@ fun RankingItem(user: UserRanking, position: Int, onAddFriend: () -> Unit) {
                 )
             }
 
-            // BOTÓN AÑADIR AMIGO
+            // BOTÓN: ir al perfil
             IconButton(
-                onClick = onAddFriend
+                onClick = onOpenProfile
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Añadir amigo",
+                    contentDescription = "Ver perfil",
                     tint = Color.Black
                 )
             }

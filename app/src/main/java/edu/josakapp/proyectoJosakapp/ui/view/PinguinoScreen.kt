@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,8 +47,6 @@ fun PinguinoScreen(
         .atStartOfDay(java.time.ZoneId.systemDefault())
         .toInstant()
         .toEpochMilli()
-    var menuTareasExpandido by remember { mutableStateOf(false) }
-
     // Lógica de mensaje: Si faltan hábitos, pregunta por ellos
     val mensaje = remember(listaHabitos, registros) {
         val habitosPendientes = listaHabitos.find { habit ->
@@ -97,6 +93,11 @@ fun PinguinoScreen(
             // Cargar la ropa comprada
             pinguinoViewModel.cargarRopaComprada(userId)
 
+            // Cargar la mochila persistente de bebidas compradas
+            pinguinoViewModel.cargarMochila(userId)
+            // Cargar la ropa equipada persistente
+            pinguinoViewModel.cargarEquipada(userId)
+
             // Cargar el estado del pingüino
             withContext(Dispatchers.IO) {
                 val pinguinoData = pinguinoRepository.getPinguino(userId)
@@ -128,37 +129,24 @@ fun PinguinoScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
-            Box {
-                IconButton(
-                    onClick = { menuTareasExpandido = true },
-                    modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.8f), CircleShape)
-                        .size(45.dp)
-                ) {
-                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.Black)
-                }
-
-                DropdownMenu(
-                    expanded = menuTareasExpandido,
-                    onDismissRequest = { menuTareasExpandido = false }
-                ) {
-                    DropdownMenuItem(text = { Text("Dar de beber") }, onClick = {
-                        showSheet = true
-                        menuTareasExpandido = false
-                    })
-                    DropdownMenuItem(text = { Text("Cambiar ropa") }, onClick = {
-                        showRopaSheet = true
-                        menuTareasExpandido = false
-                    })
-                }
+            Button(
+                onClick = { showSheet = true },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
+            ) {
+                Text("Dar de beber")
             }
-            Spacer(modifier = Modifier.width(30.dp))
+            Button(
+                onClick = { showRopaSheet = true },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+            ) {
+                Text("Cambiar ropa")
+            }
         }
 
         DraggablePenguin(
             nivelSed = nivelSed, // Muestra la barra azul
-            message = null
+            message = null,
+            accesorioResId = ropaEquipadaRes
         )
 
         // Mostramos el BottomSheet para dar de beber solo si showSheet es true
@@ -214,8 +202,8 @@ fun PinguinoScreen(
                                 val costoTotal = precioUnitario * cantidad
                                 val monedasActuales = userState?.monedas ?: 0
 
-                                if (monedasActuales >= costoTotal) {
-                                    pinguinoViewModel.comprarBebida(resId, cantidad)
+                                    if (monedasActuales >= costoTotal) {
+                                    pinguinoViewModel.comprarBebida(resId, cantidad, currentUserId)
                                     userViewModel.updateMonedas(-costoTotal) //Si el usuario tiene suficiente dinero, procedemos con la compra
 
 
@@ -349,8 +337,8 @@ fun PinguinoScreen(
                             } else {
                                 val currentUserId = userState?.id_usuario ?: 0
 
-                                itemRopaSeleccionado?.let { resId ->
-                                    pinguinoViewModel.equiparRopa(resId)
+                                    itemRopaSeleccionado?.let { resId ->
+                                    pinguinoViewModel.equiparRopa(resId, currentUserId)
 
                                     Toast.makeText(context, "¡Ropa cambiada!", Toast.LENGTH_SHORT).show()
                                 }

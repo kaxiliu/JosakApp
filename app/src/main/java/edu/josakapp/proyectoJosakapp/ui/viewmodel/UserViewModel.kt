@@ -33,6 +33,9 @@ class UserViewModel (): ViewModel() {
     private val _usuariosEncontrados = MutableStateFlow<List<User>>(emptyList())
     val usuariosEncontrados: StateFlow<List<User>> = _usuariosEncontrados
 
+    private val _followedFriendNames = MutableStateFlow<Set<String>>(emptySet())
+    val followedFriendNames: StateFlow<Set<String>> = _followedFriendNames
+
 
     private var currentUserId: Int? = null
 
@@ -135,13 +138,26 @@ class UserViewModel (): ViewModel() {
     }
 
     /**Función para seguir a alguien*/
-    fun followTargetUser(myId: String, targetId: String){
+    fun followTargetUser(myId: String, targetId: String, targetName: String){
         viewModelScope.launch(Dispatchers.IO){
             try{
+                if (_followedFriendNames.value.contains(targetName)) return@launch
                 userRepository.followUser(myId, targetId)
+                userRepository.addFriendLocal(targetName)
+                _followedFriendNames.value = userRepository.getLocalFriendNames()
+                loadSocialStats(myId)
                 Log.d("SOCIAL_DEBUG", "Usuario $myId ahora sigue) a $targetId")
             } catch (e: Exception){
                 Log.e("SOCIAL_DEBUG", "Error al seguir usuario: ${e.message}")
+            }
+        }
+    }
+
+    fun loadFollowedFriends() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _followedFriendNames.value = userRepository.getLocalFriendNames()
+            } catch (_: Exception) {
             }
         }
     }

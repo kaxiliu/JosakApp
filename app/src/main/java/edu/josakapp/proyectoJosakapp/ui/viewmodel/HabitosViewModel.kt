@@ -13,6 +13,8 @@ import edu.josakapp.proyectoJosakapp.data.di.AppModule
 import edu.josakapp.proyectoJosakapp.data.local.LocalDatasource
 import edu.josakapp.proyectoJosakapp.data.model.Habito
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
+import edu.josakapp.proyectoJosakapp.data.util.clearHabitLastCompletedAt
+import edu.josakapp.proyectoJosakapp.data.util.saveHabitLastCompletedAt
 import edu.josakapp.proyectoJosakapp.data.repository.HabitosRepository
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoWidget
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -161,6 +163,7 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             try {
                 habitosRepository.deleteHabito(habito)
+                clearHabitLastCompletedAt(getApplication(), habito.id_habito)
                 Log.d("HabitosViewModel", "Habito deleted successfully")
             } catch (e: Exception) {
                 Log.e("HabitosViewModel", "Error deleting habito: ${e.message}", e)
@@ -179,6 +182,7 @@ class HabitosViewModel(application: Application) : AndroidViewModel(application)
                 habitosRepository.insertRegistro(HabitoRegistro(habito.id_habito, hoy))
                 habitosRepository.updateEstado(habito.id_habito, true)
                 habitosRepository.addXpToUser(habito.id_usuario, habito.exp_habito)
+                saveHabitLastCompletedAt(getApplication(), habito.id_habito)
 
                 // Emitir el ID del usuario para notificar que su XP ha sido actualizado
                 _userXpUpdated.emit(habito.id_usuario)

@@ -1,0 +1,65 @@
+[
+  {
+	"id": "hat_pirate",
+	"name": "Sombrero Pirata",
+	"description": "Dale un aire aventurero a tu pingüino.",
+	"price": 100,
+	"rarity": "rare",
+	"category": "ropa",
+	"image": "pirata.png"
+  },
+  {
+	"id": "mushroom_hat",
+	"name": "Set Hongos",
+	"description": "Sombrero divertido en forma de hongo.",
+	"price": 40,
+	"rarity": "common",
+	"category": "ropa",
+	"image": "mushroom.png"
+  },
+  {
+	"id": "pinguino_skin",
+	"name": "Skin Pingüino",
+	"description": "Personaliza el cuerpo de tu mascota.",
+	"price": 300,
+	"rarity": "epic",
+	"category": "cuerpo",
+	"image": "pinguino.png"
+  },
+  {
+	"id": "fresa_hat",
+	"name": "Gorro Fresa",
+	"description": "Dulce y coqueto.",
+	"price": 30,
+	"rarity": "common",
+	"category": "ropa",
+	"image": "fresa.png"
+  },
+  {
+	"id": "flores_collar",
+	"name": "Collar de Flores",
+	"description": "Un detalle floral para tu pinguino.",
+	"price": 60,
+	"rarity": "rare",
+	"category": "accesorio",
+	"image": "flores.png"
+  },
+  {
+	"id": "magia",
+	"name": "Efecto Mágico",
+	"description": "Efecto visual especial en pantalla.",
+	"price": 200,
+	"rarity": "epic",
+	"category": "efecto",
+	"image": "magia.png"
+  },
+  {
+	"id": "money_pack",
+	"name": "Pack Monedas",
+	"description": "Consigue 200 monedas extra.",
+	"price": 150,
+	"rarity": "common",
+	"category": "consumible",
+	"image": "money.xml"
+  }
+]

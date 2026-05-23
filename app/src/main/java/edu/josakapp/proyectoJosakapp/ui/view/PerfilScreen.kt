@@ -79,14 +79,33 @@ fun PerfilScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val userState by userViewModel.user.collectAsState()
-    val activeUser = userState ?: user
+    val currentUser = userState
+    val activeUser = if (
+        currentUser != null &&
+        (currentUser.uid == user.uid || currentUser.id_usuario == user.id_usuario)
+    ) {
+        currentUser
+    } else {
+        user
+    }
+    val isOwnProfile = currentUser != null &&
+        (currentUser.uid == user.uid || currentUser.id_usuario == user.id_usuario)
 
     val seguidores by userViewModel.seguidoresCount.collectAsState()
     val siguiendo by userViewModel.siguiendoCount.collectAsState()
+    val followedFriends by userViewModel.followedFriendNames.collectAsState()
+
+    val socialId = activeUser.uid.ifBlank { activeUser.id_usuario.toString() }
+    val currentUserId = currentUser?.uid?.takeIf { it.isNotBlank() } ?: currentUser?.id_usuario?.toString().orEmpty()
+    val isAlreadyFriend = followedFriends.contains(activeUser.nombre_usuario)
+
+    LaunchedEffect(Unit) {
+        userViewModel.loadFollowedFriends()
+    }
 
     /**Para cargar a los que se sigue y seguidores*/
-    LaunchedEffect(activeUser.id_usuario) {
-        userViewModel.loadSocialStats(activeUser.id_usuario.toString())
+    LaunchedEffect(socialId) {
+        userViewModel.loadSocialStats(socialId)
     }
 
     /**Abre la galería para la foto de perfil y puede seleccionar imagen*/
@@ -104,6 +123,13 @@ fun PerfilScreen(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
+        Text(
+            text = "Perfil de @${activeUser.nombre_usuario}",
+            modifier = Modifier.padding(start = 24.dp, top = 12.dp, bottom = 4.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+
         // --- 1. CABECERA (Foto y Ajustes) ---
         Box(
             modifier = Modifier
@@ -175,12 +201,32 @@ fun PerfilScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { onNavigateToSearch()},
+                onClick = {
+                    if (isOwnProfile) {
+                        onNavigateToSearch()
+                    } else if (!isAlreadyFriend && currentUserId.isNotBlank()) {
+                        userViewModel.followTargetUser(currentUserId, socialId, activeUser.nombre_usuario)
+                    }
+                },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4))
+                enabled = isOwnProfile || !isAlreadyFriend,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when {
+                        isOwnProfile -> Color(0xFF03A9F4)
+                        isAlreadyFriend -> Color(0xFF66BB6A)
+                        else -> Color(0xFF03A9F4)
+                    },
+                    disabledContainerColor = Color(0xFF66BB6A)
+                )
             ) {
-                Text("Añadir amigos")
+                Text(
+                    text = when {
+                        isOwnProfile -> "Buscar amigos"
+                        isAlreadyFriend -> "Ya es tu amigo"
+                        else -> "Añadir a amigos"
+                    }
+                )
             }
 
             IconButton(
@@ -224,11 +270,11 @@ fun PerfilScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 // Falta poner la racha
                 StatSmallCard("Racha", "${activeUser.xp_total / 100} días", Icons.Default.Whatshot, Color(0xFFFF5722), Modifier.weight(1f))
-                StatSmallCard("Exp Total", "${user.xp_total} XP", Icons.Default.Bolt, Color(0xFFFFD700), Modifier.weight(1f))
+                StatSmallCard("Exp Total", "${activeUser.xp_total} XP", Icons.Default.Bolt, Color(0xFFFFD700), Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatSmallCard("Rango", "${user.nivel}", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
+                StatSmallCard("Rango", "${activeUser.nivel}", Icons.Default.EmojiEvents, Color(0xFF03A9F4), Modifier.weight(1f))
                 //  StatSmallCard("Posición", "${user.}", Icons.Default.BarChart, Color(0xFF4CAF50), Modifier.weight(1f))
                 /*Aqui comente posicion por que no hay ningun id, que tenga la posicion*/
             }

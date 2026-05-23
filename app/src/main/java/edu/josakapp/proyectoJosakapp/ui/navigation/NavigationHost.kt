@@ -4,6 +4,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -127,6 +129,40 @@ fun NavigationHost(
                 )
             } else {
                 navController.navigate(NavScreens.NavMainScreen.ruta)
+            }
+        }
+        // Perfil de otro usuario por id
+        composable("perfil_user/{userId}") { backStackEntry ->
+            val userIdStr = backStackEntry.arguments?.getString("userId")
+            val userId = userIdStr?.toIntOrNull()
+
+            // Estado para el usuario objetivo (para que la UI se recomponga cuando llegue)
+            val targetUserState = remember { mutableStateOf<edu.josakapp.proyectoJosakapp.data.model.User?>(null) }
+
+            LaunchedEffect(userId) {
+                targetUserState.value = null
+                if (userId != null) {
+                    try {
+                        val u = edu.josakapp.proyectoJosakapp.data.di.AppModule.userRepository.getUserById(userId)
+                        targetUserState.value = u
+                    } catch (_: Exception) {
+                        targetUserState.value = null
+                    }
+                }
+            }
+
+            val targetUser = targetUserState.value
+            if (targetUser != null) {
+                PerfilScreen(
+                    user = targetUser,
+                    userViewModel = userViewModel,
+                    onNavigateToSettings = { navController.navigate(NavScreens.NavAjusteScreen.ruta) },
+                    onCompleteProfile = { navController.navigate(NavScreens.NavCompletarPerfil.ruta) },
+                    onNavigateToSearch = { navController.navigate(NavScreens.NavAmigosScreen.ruta)}
+                )
+            } else {
+                // Mientras se carga, mostrar placeholder
+                Text("Cargando perfil...")
             }
         }
     }

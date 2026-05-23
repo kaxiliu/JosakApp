@@ -8,8 +8,10 @@ import android.content.Intent
 import android.widget.Toast
 import edu.josakapp.proyectoJosakapp.data.datasource.AppDatabase
 import edu.josakapp.proyectoJosakapp.data.model.HabitoRegistro
+import edu.josakapp.proyectoJosakapp.data.util.saveHabitLastCompletedAt
 import edu.josakapp.proyectoJosakapp.ui.components.HabitoWidget
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NotificationReceiver : BroadcastReceiver() {
@@ -22,7 +24,7 @@ class NotificationReceiver : BroadcastReceiver() {
             if (habitoId == -1) return
 
             // Inicia una corrutina para realizar operaciones de base de datos en segundo plano
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 val db = AppDatabase.getInstance(context)
                 val currentHabito = db.habitosDAO().getHabitoById(habitoId)
                 val hoy = java.time.LocalDate.now() // Calcula el tiempo de hoy
@@ -37,6 +39,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     // Si ahora está completado, inserta un registro; si no, lo elimina
                     if (nuevoEstado) {
                         db.habitosDAO().insertRegistro(HabitoRegistro(habitoId, hoy))
+                        saveHabitLastCompletedAt(context, habitoId, System.currentTimeMillis())
                     }else {
                         db.habitosDAO().deleteRegistro(habitoId, hoy)
                     }

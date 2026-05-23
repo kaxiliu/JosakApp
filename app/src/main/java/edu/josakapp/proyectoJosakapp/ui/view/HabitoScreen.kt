@@ -61,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -74,6 +75,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import edu.josakapp.proyectoJosakapp.R
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.util.getHabitLastCompletedAt
 import edu.josakapp.proyectoJosakapp.ui.components.AnyadirHabito
 import edu.josakapp.proyectoJosakapp.ui.components.CalendarCard
 import edu.josakapp.proyectoJosakapp.ui.components.DraggablePenguin
@@ -91,6 +93,7 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
     var showDeleteDialog by remember { mutableStateOf(false) }//Borrar el habito
     val listaHabitos by viewModel.habitos.collectAsState()
     val registros by viewModel.todosLosRegistros.collectAsState()
+    val context = LocalContext.current
 
     val hoy = java.time.LocalDate.now()
         .atStartOfDay(java.time.ZoneId.systemDefault())
@@ -214,8 +217,17 @@ fun HabitoScreen(viewModel: HabitosViewModel, userViewModel: UserViewModel,
                 ) {
                     items(listaHabitos) { habit ->
                         val isDoneToday = registros.any { it.id_habito == habit.id_habito && it.fecha == hoy }
+                        val lastCompletedAtMillis = remember(habit.id_habito, registros) {
+                            getHabitLastCompletedAt(context, habit.id_habito)
+                                ?: registros
+                                    .filter { it.id_habito == habit.id_habito }
+                                    .maxByOrNull { it.fecha }
+                                    ?.fecha
+                                ?: habit.fecha_creacion
+                        }
                         HabitoCard(
                             habito = habit.copy(estado = isDoneToday),
+                            lastCompletedAtMillis = lastCompletedAtMillis,
                             onClick = {
                                 //viewModel.updateEstado(habit.id_habito, !habit.estado)
                                 viewModel.toggleHabito(habit)

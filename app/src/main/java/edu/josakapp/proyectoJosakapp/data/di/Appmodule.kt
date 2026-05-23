@@ -16,6 +16,9 @@ object AppModule {
         appContext = context.applicationContext
     }
 
+    // Permite obtener el contexto de la app desde otros módulos que no usan DI
+    fun getContext(): Context = appContext
+
     private val database: AppDatabase by lazy {
         AppDatabase.getInstance(appContext)
     }

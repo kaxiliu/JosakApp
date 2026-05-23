@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -173,12 +175,12 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
             }
 
             composable(NavScreens.NavRankingScreen.ruta) {
-                RankingScreen(rankingViewModel)
+                RankingScreen(rankingViewModel, userViewModel, bottomNavController)
             }
 
             composable(NavScreens.NavTiendaScreen.ruta) {
-                // TiendaScreen(user)
-                TiendaScreen(user=activeUser)
+                // Tienda usando UserViewModel
+                TiendaScreen(userViewModel = userViewModel)
 
             }
 
@@ -216,10 +218,40 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
                     onNavigateToSearch = {bottomNavController.navigate(NavScreens.NavBuscarAmigosSreen.ruta)}
                 )
             }
+            composable("perfil_user/{userId}") { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull()
+                val targetUserState = remember { mutableStateOf<User?>(null) }
+
+                LaunchedEffect(userId) {
+                    targetUserState.value = null
+                    if (userId != null) {
+                        targetUserState.value = try {
+                            edu.josakapp.proyectoJosakapp.data.di.AppModule.userRepository.getUserById(userId)
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
+                }
+
+                val targetUser = targetUserState.value
+                if (targetUser != null) {
+                    PerfilScreen(
+                        user = targetUser,
+                        userViewModel = userViewModel,
+                        onNavigateToSettings = {
+                            bottomNavController.navigate(NavScreens.NavAjusteScreen.ruta)
+                        },
+                        onCompleteProfile = { bottomNavController.navigate(NavScreens.NavCompletarPerfil.ruta) },
+                        onNavigateToSearch = { bottomNavController.navigate(NavScreens.NavBuscarAmigosSreen.ruta) }
+                    )
+                } else {
+                    Text("Cargando perfil...")
+                }
+            }
             composable(NavScreens.NavBuscarAmigosSreen.ruta) {
                 BuscarAmigosScreen(
                     userViewModel = userViewModel,
-                    miId = activeUser.id_usuario.toString(),
+                    miId = activeUser.uid.ifBlank { activeUser.id_usuario.toString() },
                     onBack = { bottomNavController.popBackStack()}
                 )
             }
@@ -227,6 +259,7 @@ fun MainContainerScreen(user: User, themeViewModel: ThemeViewModel,
             composable(NavScreens.NavCompletarPerfil.ruta) {
                 CompletarPerfilScreen(
                     user = user,
+                    userViewModel = userViewModel,
                     onBack = { bottomNavController.popBackStack() }
                 )
             }

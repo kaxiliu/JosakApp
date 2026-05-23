@@ -57,6 +57,7 @@ fun RowScope.ItemUI(
     cantidadPoseida: Int = 0,
     textoEstado: String? = null,
     deshabilitado: Boolean = false,
+    accentColor: Color = Color(0xFF2196F3),
     onSelect: () -> Unit
 ) {
     Column(
@@ -67,11 +68,15 @@ fun RowScope.ItemUI(
             .clickable(enabled = !deshabilitado) { onSelect() }
             .border(
                 width = if (estaSeleccionado) 4.dp else 1.dp,
-                color = if (estaSeleccionado) Color(0xFFFFA500) else Color.LightGray.copy(alpha = 0.5f),
+                color = if (estaSeleccionado) accentColor else Color.LightGray.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(12.dp)
             )
             //  Si ya está comprado, se muestra con un tono gris opaco
-            .background(if(deshabilitado) Color.LightGray.copy(alpha = 0.5f) else Color.LightGray.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .background(
+                if (deshabilitado) Color.LightGray.copy(alpha = 0.5f)
+                else accentColor.copy(alpha = 0.14f),
+                RoundedCornerShape(12.dp)
+            )
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -86,7 +91,7 @@ fun RowScope.ItemUI(
                 text = "🪙 $precio",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFFFA500)
+                color = accentColor
             )
         } else {
             if (textoEstado != null) {
@@ -167,6 +172,7 @@ fun MochilaBebidasGrid(
                         esTienda = false,
                         estaSeleccionado = itemSeleccionado == resId,
                         cantidadPoseida = mochila[resId] ?: 0,
+                        accentColor = beverageColor(resId),
                         onSelect = { onItemSelected(resId) }
                     )
                 }
@@ -205,6 +211,7 @@ fun TiendaBebidasGrid(
                         estaSeleccionado = itemSeleccionado == resId,
                         precio = precio,
                         cantidadPoseida = mochila[resId] ?: 0,
+                        accentColor = beverageColor(resId),
                         onSelect = { onItemSelected(resId) }
                     )
                 }
@@ -245,6 +252,7 @@ fun TiendaRopaGrid(
                         precio = accesorio.precio.toInt(),
                         cantidadPoseida = if (yaComprado) 1 else 0,
                         deshabilitado = yaComprado,
+                        accentColor = accessoryColor(accesorio.imagen),
                         onSelect = { onItemSelected(resId) }
                     )
                 }
@@ -278,6 +286,7 @@ fun MochilaRopaGrid(
                         esTienda = false,
                         estaSeleccionado = itemRopaSeleccionado == resId,
                         textoEstado = if (ropaEquipadaRes == resId) "Puesto" else " Disponible",
+                        accentColor = accessoryColor(imagenNombre),
                         onSelect = { onItemSelected(resId) }
                     )
                 }
@@ -335,5 +344,25 @@ fun obtenerDrawableId(nombreImagen: String): Int {
     return remember(nombreImagen) {
         context.resources.getIdentifier(nombreImagen, "drawable",
             context.packageName)
+    }
+}
+
+private fun accessoryColor(nombreImagen: String): Color {
+    return when (nombreImagen.lowercase()) {
+        "pirata" -> Color(0xFFFFA500)
+        "mushroom" -> Color(0xFF8BC34A)
+        "magia" -> Color(0xFF9C27B0)
+        "fresa" -> Color(0xFFE91E63)
+        "flores" -> Color(0xFF4CAF50)
+        "calabaza" -> Color(0xFFFF9800)
+        "navidad" -> Color(0xFFB71C1C)
+        "arbol" -> Color(0xFF2E7D32)
+        else -> Color(0xFF2196F3)
+    }
+}
+
+private fun beverageColor(resId: Int): Color {
+    return when (resId) {
+        else -> Color(0xFF2196F3)
     }
 }

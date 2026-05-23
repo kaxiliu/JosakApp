@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
@@ -24,6 +23,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,14 +35,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.josakapp.proyectoJosakapp.data.model.Habito
+import edu.josakapp.proyectoJosakapp.data.util.formatHabitRemainingTime
+import kotlinx.coroutines.delay
 
 @Composable
 fun HabitoCard(
     habito: Habito,
+    lastCompletedAtMillis: Long? = null,
     onClick: (Habito) -> Unit = {}, //Estado
     onEdit: (Habito) -> Unit,//Editar
     onLongClick: (Habito) -> Unit = {} //Borrar
 ) {
+    var currentTimeMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(habito.id_habito, lastCompletedAtMillis, habito.frecuencia, habito.fecha_creacion) {
+        currentTimeMillis = System.currentTimeMillis()
+        while (true) {
+            delay(60_000L)
+            currentTimeMillis = System.currentTimeMillis()
+        }
+    }
+
+    val timerText = remember(lastCompletedAtMillis, habito.fecha_creacion, habito.frecuencia, currentTimeMillis) {
+        formatHabitRemainingTime(
+            lastCompletedAt = lastCompletedAtMillis,
+            createdAt = habito.fecha_creacion,
+            frecuencia = habito.frecuencia,
+            now = currentTimeMillis
+        )
+    }
 
     // Muestra la información
     Card(
@@ -81,6 +106,13 @@ fun HabitoCard(
                             fontSize = 16.sp
                         )
                         Text(text = habito.frecuencia, fontSize = 12.sp, color = Color.Gray)
+                        if (habito.estado) {
+                            Text(
+                                text = "Siguiente en $timerText",
+                                fontSize = 11.sp,
+                                color = Color(0xFF607D8B)
+                            )
+                        }
                     }
                 }
 
@@ -126,7 +158,7 @@ fun HabitoCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LinearProgressIndicator(
-                    progress = if (habito.estado) 1f else 0f,
+                    progress = { if (habito.estado) 1f else 0f },
                     modifier = Modifier
                         .weight(1f)
                         .height(6.dp),

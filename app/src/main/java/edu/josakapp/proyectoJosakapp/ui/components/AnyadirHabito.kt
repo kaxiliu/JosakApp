@@ -69,7 +69,7 @@ fun AnyadirHabito(
     val scrollState = rememberScrollState()
     val listaIconos = listOf("💧", "🏃", "📚", "🍎", "🧘", "🎸", "🧹", "💊", "💻", "🛌", "🌱", "🍳")
 
-    val options = listOf("Todos los días", "Todas las semanas", "Todos los meses")
+    val options = listOf("Cada hora", "Todos los días", "Todas las semanas", "Todos los meses")
     var expanded by remember { mutableStateOf(false) }
     // Cargamos la frecuencia guardada o la primera por defecto
     var selectedOption by remember { mutableStateOf(habitoInicial?.frecuencia ?: options[0]) }
@@ -78,6 +78,7 @@ fun AnyadirHabito(
     // usando remember para evitar recalcularlo innecesariamente
     val xpValue = remember(selectedOption) {
         when (selectedOption) {
+            "Cada hora" -> 5
             "Todos los días" -> 10
             "Todas las semanas" -> 30
             "Todos los meses" -> 50

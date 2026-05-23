@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -30,17 +31,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
 import edu.josakapp.proyectoJosakapp.R
-
+import kotlin.math.roundToInt
 
 @Composable
-fun DraggablePenguin(modifier: Modifier = Modifier,
-                     message: String? = null,
-                     nivelSed: Float? = null) {
-    // Estados para recordar la posición X e Y del pingüino
-    var offsetX by remember { mutableFloatStateOf(100f) } // Posición inicial X (opcional)
-    var offsetY by remember { mutableFloatStateOf(500f) } // Posición inicial Y (opcional)
+fun DraggablePenguin(
+    modifier: Modifier = Modifier,
+    message: String? = null,
+    nivelSed: Float? = null,
+    accesorioResId: Int? = null
+) {
+    var offsetX by remember { mutableFloatStateOf(100f) }
+    var offsetY by remember { mutableFloatStateOf(500f) }
+
     Column(
         modifier = modifier
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -55,64 +58,40 @@ fun DraggablePenguin(modifier: Modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy((-80).dp)
     ) {
         PenguinStatusHeader(mensaje = message, nivelSed = nivelSed)
-//        if (!message.isNullOrEmpty()) {
-//            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                Box(
-//                    modifier = Modifier
-//                        .background(Color.White, RoundedCornerShape(12.dp))
-//                        .padding(horizontal = 10.dp, vertical = 6.dp)
-//                ) {
-//                Text(
-//                    text = message,
-//                    color = Color.Black,
-//                    fontSize = 12.sp,
-//                    fontWeight = FontWeight.Medium
-//                )
-//            }
-//            Box(
-//                modifier = Modifier
-//                    .size(10.dp)
-//                    .offset(y = (-5).dp)
-//                    .background(Color.White, RoundedCornerShape(1.dp))
-//                )
-//            }
-//        }
 
-    Image(
-        painter = painterResource(id = R.drawable.pinguino), // Usando un placeholder por ahora
-        contentDescription = "Pingüino interactivo",
-        modifier = modifier
-            .size(230.dp) // Tamaño del pingüino
-            /*
-            // Aplicar el desplazamiento basado en el estado actual
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-            //  Detectar el gesto de arrastre
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume() // Consumir el evento para que no se propague
-                    // Actualizar la posición sumando la cantidad arrastrada
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
-                }
-            }*/
-        )
+        Box(modifier = Modifier.size(230.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.pinguino),
+                contentDescription = "Pingüino interactivo",
+                modifier = Modifier.fillMaxSize()
+            )
+
+            if (accesorioResId != null && accesorioResId != 0) {
+                Image(
+                    painter = painterResource(id = accesorioResId),
+                    contentDescription = "Accesorio equipado",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .size(120.dp)
+                        .offset(y = 8.dp)
+                )
+            }
+        }
     }
 }
-
 
 @Composable
 fun PenguinStatusHeader(
     mensaje: String? = null,
-    nivelSed: Float? = null // Si es null, no mostramos la barra
+    nivelSed: Float? = null
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 8.dp)
     ) {
         if (nivelSed != null) {
-            // --- MOSTRAR BARRA DE SED
             Column(
-                modifier = Modifier.width(120.dp), // Ancho fijo para que quede bien sobre la cabeza
+                modifier = Modifier.width(120.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -151,7 +130,6 @@ fun PenguinStatusHeader(
                         fontWeight = FontWeight.Medium
                     )
                 }
-                // Triangulito del mensaje
                 Box(
                     modifier = Modifier
                         .size(10.dp)

@@ -7,6 +7,7 @@ import edu.josakapp.proyectoJosakapp.data.network.AuthService
 import edu.josakapp.proyectoJosakapp.data.remote.UserRemoteRepository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 
 class UserRepository(
@@ -114,6 +115,15 @@ class UserRepository(
             android.util.Log.e("FIREBASE_SOCIAL", "Error al guardar relación: ${e.message}")
         }
     }
+
+    suspend fun addFriendLocal(nombre: String) {
+        local.insertAmigo(nombre)
+    }
+
+    suspend fun getLocalFriendNames(): Set<String> {
+        return local.getAmigos().first().map { it.nombre }.toSet()
+    }
+
     suspend fun getFollowersCount(userId: String): Int {
         val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
         return try {
